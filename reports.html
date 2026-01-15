@@ -23,8 +23,6 @@
       --muted2:rgba(243,241,255,.55);
       --pink:#ff2ea6;
       --violet:#7c3aed;
-      --good:#3ddc97;
-      --bad:#ff5d7a;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -150,7 +148,6 @@
       font-weight:900;font-size:12px
     }
 
-    /* Print */
     @media print{
       body{background:#fff;color:#000;padding:0}
       .topbar,.panel:first-child{display:none !important}
@@ -254,22 +251,11 @@
   </div>
 
 <script type="module">
-  // ---- Firebase (CDN module) ----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import {
-    getAuth,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  import {
-    getFirestore,
-    collection,
-    getDocs,
-    query,
-    where
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-  // ✅ Your Firebase config (keep yours)
+  // ✅ Replace with your real Firebase config
   const firebaseConfig = {
   apiKey: "AIzaSyB_pQt0C5X3R9tmVl8SRGT-DQ3eoNvdOEw",
   authDomain: "salonsales-32a19.firebaseapp.com",
@@ -278,12 +264,10 @@
   messagingSenderId: "727392891815",
   appId: "1:727392891815:web:1ea28d2335b6ee9a363c82"
 };
-
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // ---- UI ----
   const msg = document.getElementById("msg");
   const output = document.getElementById("output");
   const printMeta = document.getElementById("printMeta");
@@ -293,6 +277,8 @@
     currency: "LKR",
     minimumFractionDigits: 2
   }).format(Number(n || 0));
+
+  // ✅ 01-Jan-26 format
   const fmtDate = (iso) => {
     if (!iso) return "";
     const d = new Date(iso + "T00:00:00");
@@ -300,7 +286,7 @@
     const dd = String(d.getDate()).padStart(2,"0");
     const mm = months[d.getMonth()];
     const yy = String(d.getFullYear()).slice(-2);
-    return `${dd}-${mm}-${yy}`; // 01-Jan-26
+    return `${dd}-${mm}-${yy}`;
   };
 
   function getRange(){
@@ -330,7 +316,6 @@
     printMeta.textContent = `${title} | ${subtitle} | Printed: ${stamp}`;
   }
 
-  // ---- Print / Logout ----
   document.getElementById("btnPrint").onclick = () => window.print();
 
   document.getElementById("btnLogout").onclick = async () => {
@@ -338,16 +323,15 @@
     window.location.href = "index.html";
   };
 
-  // ---- REPORT: Daily business (sales + bank saving) ----
+  // Daily business
   document.getElementById("openDaily").onclick = async () => {
     msg.className="msg"; msg.textContent="";
     const r = getRange();
     if (!r){ msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
-    setPrintTitle("Daily Business Report", `Range: ${r.from} to ${r.to}`);
+    setPrintTitle("Daily Business Report", `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`);
 
-    const qDaily = query(
-      collection(db, "dailySales"),
+    const qDaily = query(collection(db, "dailySales"),
       where("date", ">=", r.from),
       where("date", "<=", r.to)
     );
@@ -368,7 +352,7 @@
 
     output.innerHTML = `
       <div style="font-weight:900;font-size:15px;">Daily Business Report</div>
-      <div class="muted">Range: ${r.from} to ${r.to}</div>
+      <div class="muted">Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}</div>
 
       <table>
         <thead><tr>
@@ -392,16 +376,15 @@
     `;
   };
 
-  // ---- REPORT: Daily expenses only ----
+  // Daily expenses
   document.getElementById("openExpenses").onclick = async () => {
     msg.className="msg"; msg.textContent="";
     const r = getRange();
     if (!r){ msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
-    setPrintTitle("Total Expenses Report (Daily)", `Range: ${r.from} to ${r.to}`);
+    setPrintTitle("Total Expenses Report (Daily)", `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`);
 
-    const qDaily = query(
-      collection(db, "dailySales"),
+    const qDaily = query(collection(db, "dailySales"),
       where("date", ">=", r.from),
       where("date", "<=", r.to)
     );
@@ -421,7 +404,7 @@
 
     output.innerHTML = `
       <div style="font-weight:900;font-size:15px;">Total Expenses Report (Daily)</div>
-      <div class="muted">Range: ${r.from} to ${r.to}</div>
+      <div class="muted">Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}</div>
 
       <table>
         <thead><tr>
@@ -443,7 +426,7 @@
     `;
   };
 
-  // ---- REPORT: Monthly (salary by worker OR monthly must totals) ----
+  // Monthly
   document.getElementById("openMonthly").onclick = async () => {
     msg.className="msg"; msg.textContent="";
     const monthKey = document.getElementById("monthPick").value;
@@ -454,7 +437,10 @@
     if (type === "salary"){
       setPrintTitle("Monthly Salary Report (By workers)", `Month: ${monthKey}`);
 
-      const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", monthKey), where("type","==","salary"));
+      const qMust = query(collection(db,"monthlyExpenses"),
+        where("monthKey","==", monthKey),
+        where("type","==","salary")
+      );
       const snap = await getDocs(qMust);
 
       const byWorker = {};
@@ -489,7 +475,6 @@
       return;
     }
 
-    // monthly must totals
     setPrintTitle("Monthly Must Report", `Month: ${monthKey}`);
 
     const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", monthKey));
@@ -497,6 +482,7 @@
 
     const byType = {salary:0,rent:0,water:0,electric:0,other:0};
     let total=0;
+
     snap.forEach(doc=>{
       const x=doc.data();
       const amt=Number(x.amount||0);
@@ -527,7 +513,7 @@
     `;
   };
 
-  // ---- FULL SUMMARY (All-in-one + charts + tables + insights) ----
+  // Full summary
   let chartLine=null, chartPie=null;
 
   document.getElementById("openFull").onclick = async () => {
@@ -535,11 +521,9 @@
     const r = getRange();
     if (!r){ msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
-    setPrintTitle("Full Summary Report (All-in-One)", `Range: ${r.from} to ${r.to}`);
+    setPrintTitle("Full Summary Report (All-in-One)", `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`);
 
-    // Daily
-    const qDaily = query(
-      collection(db,"dailySales"),
+    const qDaily = query(collection(db,"dailySales"),
       where("date", ">=", r.from),
       where("date", "<=", r.to)
     );
@@ -557,7 +541,6 @@
     });
     dailyRows.sort((a,b)=>a.date.localeCompare(b.date));
 
-    // Monthly must for all months inside range
     const months = monthKeysBetween(r.from,r.to);
     const byType = {salary:0,rent:0,water:0,electric:0,other:0};
     let totalMonthlyMust=0;
@@ -578,14 +561,9 @@
     const totalExpenses = totalDailyExp + totalMonthlyMust;
     const netProfit = totalSales - totalExpenses;
 
-    // Insights
-    const bestDay=[...dailyRows].sort((a,b)=>b.profit-a.profit)[0];
-    const worstDay=[...dailyRows].sort((a,b)=>a.profit-b.profit)[0];
-    const highestExpenseDay=[...dailyRows].sort((a,b)=>b.exp-a.exp)[0];
-
     output.innerHTML = `
       <div style="font-weight:950;font-size:15px;">Full Summary Report</div>
-      <div class="muted">Range: ${r.from} to ${r.to}</div>
+      <div class="muted">Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}</div>
 
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px;">
         <div class="card">
@@ -609,15 +587,6 @@
       </div>
 
       <div class="card">
-        <div style="font-weight:900;margin-bottom:8px;">Quick Insights</div>
-        <div class="muted" style="line-height:1.8;">
-          ${bestDay ? `✅ Best profit day: <b>${bestDay.date}</b> (${money(bestDay.profit)})<br/>`:""}
-          ${worstDay ? `⚠️ Lowest profit day: <b>${worstDay.date}</b> (${money(worstDay.profit)})<br/>`:""}
-          ${highestExpenseDay ? `💸 Highest expense day: <b>${highestExpenseDay.date}</b> (${money(highestExpenseDay.exp)})`:""}
-        </div>
-      </div>
-
-      <div class="card">
         <div style="font-weight:900;margin-bottom:8px;">Daily Sales vs Daily Expenses</div>
         <canvas id="chartLine" height="140"></canvas>
       </div>
@@ -626,50 +595,8 @@
         <div style="font-weight:900;margin-bottom:8px;">Expense Breakdown (Monthly Must)</div>
         <canvas id="chartPie" height="160"></canvas>
       </div>
-
-      <div class="card">
-        <div style="font-weight:900;margin:6px 0 10px;">Daily Summary Table</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Sales</th>
-              <th>Daily expenses</th>
-              <th>Bank saving</th>
-              <th class="right">Profit (day)</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${dailyRows.map(x=>`
-              <tr>
-                <td>${x.date}</td>
-                <td>${money(x.business)}</td>
-                <td>${money(x.exp)}</td>
-                <td>${money(x.bank)}</td>
-                <td class="right">${money(x.profit)}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-
-        <div style="font-weight:900;margin:18px 0 10px;">Monthly Must Breakdown (in selected range)</div>
-        <table>
-          <thead><tr><th>Type</th><th class="right">Total</th></tr></thead>
-          <tbody>
-            <tr><td>Salaries</td><td class="right">${money(byType.salary)}</td></tr>
-            <tr><td>Rent</td><td class="right">${money(byType.rent)}</td></tr>
-            <tr><td>Water</td><td class="right">${money(byType.water)}</td></tr>
-            <tr><td>Electric</td><td class="right">${money(byType.electric)}</td></tr>
-            ${byType.other>0 ? `<tr><td>Other</td><td class="right">${money(byType.other)}</td></tr>`:""}
-          </tbody>
-          <tfoot>
-            <tr><th>Total monthly must</th><th class="right">${money(totalMonthlyMust)}</th></tr>
-          </tfoot>
-        </table>
-      </div>
     `;
 
-    // charts
     const labels = dailyRows.map(x=>x.date);
     const salesData = dailyRows.map(x=>x.business);
     const expData = dailyRows.map(x=>x.exp);
