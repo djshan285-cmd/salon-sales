@@ -69,15 +69,17 @@ a{ color: inherit; }
   gap:12px;
   min-width: 250px;
 }
-.brand img{
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+..brand img{
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
   object-fit: contain;
-  background: rgba(255,255,255,0.06);
-  padding: 8px;
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+
+  /* premium badge look */
+  background: rgba(255,255,255,0.08);
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
 }
 
 }
