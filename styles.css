@@ -12,7 +12,6 @@
   --radius: 22px;
   --shadow: 0 18px 60px rgba(0,0,0,0.38);
 
-  /* ✅ FIX: logo size (premium but not huge) */
   --logo-size: 56px;
 }
 
@@ -74,19 +73,23 @@ body{
 
 .smallMuted{ color: var(--muted); font-size: 12px; }
 
+/* ✅ MOBILE HEADER FIX */
 .topbar{
   display:flex;
   justify-content: space-between;
   align-items:center;
+  gap: 12px;
   padding: 14px 16px;
   margin-bottom: 18px;
+  flex-wrap: wrap; /* allows stacking on mobile */
 }
 
 .brand{
   display:flex;
   align-items:center;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
+  flex: 1 1 320px; /* brand gets space */
 }
 
 .brand img{
@@ -117,7 +120,22 @@ body{
   color: var(--muted);
 }
 
-.actions{ display:flex; gap: 10px; align-items:center; flex-wrap:wrap; }
+.actions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 520px){
+  .topbar{ padding: 12px; }
+  .brand{ flex: 1 1 100%; }          /* brand full row */
+  .actions{ width:100%; }            /* buttons next row */
+  .actions .btn{ flex:1; }           /* equal width */
+  .title strong{ font-size: 14px; }
+  .title span{ font-size: 11px; }
+}
 
 label{
   display:block;
@@ -200,6 +218,32 @@ th{ font-weight: 950; color: rgba(255,255,255,0.88); }
 td{ color: rgba(255,255,255,0.86); }
 th:last-child, td:last-child{ text-align:right; white-space:nowrap; }
 
+/* ✅ Reports buttons alignment */
+.btnGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+.btnGrid .btn{
+  width: 100%;
+  min-height: 46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 10px 14px;
+  text-align:center;
+  white-space: nowrap;
+}
+.btnGrid .btnWide{
+  grid-column: 1 / -1;
+}
+@media (max-width: 520px){
+  .btnGrid{ grid-template-columns: 1fr; }
+  .btnGrid .btnWide{ grid-column: auto; }
+  .btnGrid .btn{ white-space: normal; }
+}
+
 /* Print header */
 .printHeader{
   display:none;
@@ -250,30 +294,4 @@ th:last-child, td:last-child{ text-align:right; white-space:nowrap; }
   }
   th{ font-weight: 950 !important; }
   th:last-child, td:last-child{ text-align:right !important; }
-}
-/* Reports button layout */
-.btnGrid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.btnGrid .btn{
-  width: 100%;
-  height: 46px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding: 0 14px;
-}
-
-.btnGrid .btnWide{
-  grid-column: 1 / -1; /* full width */
-}
-
-/* small screens */
-@media (max-width: 520px){
-  .btnGrid{ grid-template-columns: 1fr; }
-  .btnGrid .btnWide{ grid-column: auto; }
 }
