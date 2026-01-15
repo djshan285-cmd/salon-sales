@@ -104,4 +104,151 @@
         <button id="ds_submit">Submit</button>
         <button id="ds_new">New</button>
       </div>
-      <div class="msg" id=
+      <div class="msg" id="ds_msg"></div>
+    </section>
+
+    <!-- Monthly must -->
+    <section class="card">
+      <h2>Monthly must (Salaries / Rental / Water / Elec)</h2>
+      <div class="muted">Use type + monthKey for reporting</div>
+
+      <label>Month</label>
+      <input id="me_month" type="month"/>
+
+      <label>Type</label>
+      <select id="me_type">
+        <option value="salary">Salaries</option>
+        <option value="rent">Rental</option>
+        <option value="water">Water bill</option>
+        <option value="electric">Electric bill</option>
+      </select>
+
+      <label>Worker Name (only for Salaries)</label>
+      <input id="me_worker" type="text" placeholder="Worker name"/>
+
+      <label>Paid Date</label>
+      <input id="me_paidDate" type="date"/>
+
+      <label>Amount</label>
+      <input id="me_amount" type="number" step="0.01" placeholder="0.00"/>
+
+      <label>Note</label>
+      <textarea id="me_note" placeholder="Optional"></textarea>
+
+      <div class="row">
+        <button id="me_submit">Submit</button>
+        <button id="me_new">New</button>
+      </div>
+      <div class="msg" id="me_msg"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_pQt0C5X3R9tmVl8SRGT-DQ3eoNvdOEw",
+      authDomain: "salonsales-32a19.firebaseapp.com",
+      projectId: "salonsales-32a19",
+      storageBucket: "salonsales-32a19.firebasestorage.app",
+      messagingSenderId: "727392891815",
+      appId: "1:727392891815:web:1ea28d2335b6ee9a363c82"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "index.html";
+    });
+
+    document.getElementById("reportsBtn").onclick = () => window.location.href = "reports.html";
+    document.getElementById("logoutBtn").onclick = async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    };
+
+    const num = (v) => Number(v || 0);
+
+    // Daily Sales submit
+    document.getElementById("ds_submit").onclick = async () => {
+      const user = auth.currentUser;
+      const msg = document.getElementById("ds_msg");
+      msg.textContent = "";
+
+      const date = document.getElementById("ds_date").value;
+      const businessTotal = num(document.getElementById("ds_business").value);
+      const sameDayExpenses = num(document.getElementById("ds_expenses").value);
+      const bankSaving = num(document.getElementById("ds_bank").value);
+      const note = document.getElementById("ds_note").value.trim();
+
+      if (!date) { msg.textContent = "Please select Date."; return; }
+
+      try {
+        await addDoc(collection(db, "dailySales"), {
+          date,
+          businessTotal,
+          sameDayExpenses,
+          bankSaving,
+          note,
+          uid: user?.uid || "",
+          createdAt: serverTimestamp()
+        });
+        msg.textContent = "Saved ✅";
+      } catch (e) {
+        msg.textContent = "Error: " + e.message;
+      }
+    };
+
+    document.getElementById("ds_new").onclick = () => {
+      ["ds_date","ds_business","ds_expenses","ds_bank","ds_note"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("ds_msg").textContent = "";
+    };
+
+    // Monthly submit
+    document.getElementById("me_submit").onclick = async () => {
+      const user = auth.currentUser;
+      const msg = document.getElementById("me_msg");
+      msg.textContent = "";
+
+      const monthKey = document.getElementById("me_month").value; // YYYY-MM
+      const type = document.getElementById("me_type").value;
+      const workerName = document.getElementById("me_worker").value.trim();
+      const paidDate = document.getElementById("me_paidDate").value;
+      const amount = num(document.getElementById("me_amount").value);
+      const note = document.getElementById("me_note").value.trim();
+
+      if (!monthKey) { msg.textContent = "Please select Month."; return; }
+      if (!paidDate) { msg.textContent = "Please select Paid Date."; return; }
+      if (!amount) { msg.textContent = "Please enter Amount."; return; }
+      if (type === "salary" && !workerName) { msg.textContent = "Enter Worker Name for salary."; return; }
+
+      try {
+        await addDoc(collection(db, "monthlyExpenses"), {
+          monthKey,
+          type,
+          workerName: type === "salary" ? workerName : "",
+          paidDate,
+          amount,
+          note,
+          uid: user?.uid || "",
+          createdAt: serverTimestamp()
+        });
+        msg.textContent = "Saved ✅";
+      } catch (e) {
+        msg.textContent = "Error: " + e.message;
+      }
+    };
+
+    document.getElementById("me_new").onclick = () => {
+      ["me_month","me_worker","me_paidDate","me_amount","me_note"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("me_type").value = "salary";
+      document.getElementById("me_msg").textContent = "";
+    };
+  </script>
+</body>
+</html>
