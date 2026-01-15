@@ -4,10 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Deruja Beauty Hub and Lounge - Reports</title>
+
+  <!-- IMPORTANT: premium theme -->
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <div class="wrap">
+
+    <!-- Premium top bar -->
     <div class="card topbar noPrint">
       <div class="brand">
         <img src="assets/logo.png" alt="Logo">
@@ -16,6 +21,7 @@
           <span>Reports • Print ready</span>
         </div>
       </div>
+
       <div class="actions">
         <button class="btn btnGhost" id="backBtn">← Back</button>
         <button class="btn btnPrimary" id="printBtn">🖨 Print</button>
@@ -24,12 +30,14 @@
     </div>
 
     <div class="grid">
+
       <!-- Filters -->
       <section class="card noPrint">
         <div class="sectionTitle">
           <h2>Report Selection</h2>
-          <p>Select date range or month and click Open</p>
+          <p>Select date range or month then click Open</p>
         </div>
+
         <div class="pad">
           <label>Daily / Range (From)</label>
           <input id="fromDate" type="date">
@@ -64,9 +72,11 @@
       <section class="card" id="reportArea">
         <div class="sectionTitle">
           <h2>Report Output</h2>
-          <p class="smallMuted">Tip: Use Print button for PDF / Paper</p>
+          <p class="smallMuted">Tip: Print button makes PDF / paper report</p>
         </div>
+
         <div class="pad">
+
           <!-- PRINT HEADER (shows only when printing) -->
           <div class="printHeader" id="printHeader">
             <div class="printHeaderRow">
@@ -82,9 +92,12 @@
             </div>
           </div>
 
+          <!-- report output -->
           <div class="reportBox" id="output">Select a report and click Open.</div>
+
         </div>
       </section>
+
     </div>
   </div>
 
@@ -134,14 +147,14 @@
 
     function setPrintTitle(title, sub){
       const now = new Date();
-      const dt = now.toLocaleString();
-      printTitle.textContent = `${title} ${sub ? " - " + sub : ""} | Printed: ${dt}`;
+      printTitle.textContent = `${title}${sub ? " | " + sub : ""} | Printed: ${now.toLocaleString()}`;
     }
 
     // Daily business report
     document.getElementById("openDaily").onclick = async () => {
       msg.className = "msg";
       msg.textContent = "";
+
       const r = getRange();
       if (!r) { msg.className="msg msgErr"; msg.textContent = "Select valid From and To dates."; return; }
 
@@ -162,11 +175,7 @@
         const x = d.data();
         totalBusiness += Number(x.businessTotal || 0);
         totalBank += Number(x.bankSaving || 0);
-        rows.push({
-          date: x.date,
-          businessTotal: x.businessTotal || 0,
-          bankSaving: x.bankSaving || 0
-        });
+        rows.push({ date: x.date, businessTotal: x.businessTotal || 0, bankSaving: x.bankSaving || 0 });
       });
 
       rows.sort((a,b)=> a.date.localeCompare(b.date));
@@ -191,6 +200,7 @@
     document.getElementById("openExpense").onclick = async () => {
       msg.className = "msg";
       msg.textContent = "";
+
       const r = getRange();
       if (!r) { msg.className="msg msgErr"; msg.textContent = "Select valid From and To dates."; return; }
 
@@ -233,6 +243,7 @@
     document.getElementById("openMonthly").onclick = async () => {
       msg.className = "msg";
       msg.textContent = "";
+
       const monthKey = document.getElementById("monthKey").value;
       const type = document.getElementById("monthType").value;
       if (!monthKey) { msg.className="msg msgErr"; msg.textContent = "Select month."; return; }
