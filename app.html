@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Salon App</title>
+  <style>
+    :root{
+      --bg1:#ff4fd8; --bg2:#ffb3e6;
+      --card: rgba(255,255,255,0.22);
+      --stroke: rgba(255,255,255,0.35);
+      --text:#1c1c1c;
+    }
+    body{
+      margin:0; min-height:100vh;
+      font-family: system-ui, Arial, sans-serif;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:var(--text);
+    }
+    header{
+      padding:18px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+    }
+    header .left{ display:flex; align-items:center; gap:10px; }
+    header img{ width:42px; height:42px; object-fit:contain; border-radius:10px; background: rgba(255,255,255,0.35); padding:6px; }
+    header h1{ margin:0; font-size:18px; }
+    header .right{ display:flex; gap:8px; }
+    button{
+      border:0; border-radius:999px;
+      padding:10px 14px;
+      font-weight:800;
+      cursor:pointer;
+      background: rgba(255,255,255,0.65);
+    }
+    main{
+      padding: 0 16px 24px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      main{ grid-template-columns: 1fr; }
+    }
+    .card{
+      padding:16px;
+      border-radius:18px;
+      background:var(--card);
+      border:1px solid var(--stroke);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .card h2{ margin:0 0 12px; font-size:18px; }
+    label{ display:block; margin:10px 0 6px; font-weight:700; }
+    input, select, textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,0.35);
+      outline:none;
+      box-sizing:border-box;
+    }
+    textarea{ min-height:70px; resize:vertical; }
+    .row{ display:flex; gap:10px; margin-top:12px; }
+    .muted{ font-size:13px; opacity:0.85; font-weight:700; }
+    .msg{ margin-top:10px; font-weight:800; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="left">
+      <img src="assets/logo.png" alt="Logo">
+      <h1>Salon Daily Sales & Expenses</h1>
+    </div>
+    <div class="right">
+      <button id="reportsBtn">Reports (Open)</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Daily Sales -->
+    <section class="card">
+      <h2>Daily Sales</h2>
+      <div class="muted">Submit + New (clear) buttons are here</div>
+
+      <label>Date</label>
+      <input id="ds_date" type="date"/>
+
+      <label>Total business</label>
+      <input id="ds_business" type="number" step="0.01" placeholder="0.00"/>
+
+      <label>Total Expenses (same date)</label>
+      <input id="ds_expenses" type="number" step="0.01" placeholder="0.00"/>
+
+      <label>If same date any saving on bank (amount)</label>
+      <input id="ds_bank" type="number" step="0.01" placeholder="0.00"/>
+
+      <label>Note</label>
+      <textarea id="ds_note" placeholder="Optional"></textarea>
+
+      <div class="row">
+        <button id="ds_submit">Submit</button>
+        <button id="ds_new">New</button>
+      </div>
+      <div class="msg" id=
