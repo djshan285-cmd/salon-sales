@@ -1,453 +1,691 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Deruja Beauty Hub and Lounge - Reports</title>
 
-  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg1:#0b0614;
+      --bg2:#14082a;
+      --glass:rgba(255,255,255,.08);
+      --glass2:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.14);
+      --text:#f3f1ff;
+      --muted:rgba(243,241,255,.72);
+      --muted2:rgba(243,241,255,.55);
+      --pink:#ff2ea6;
+      --violet:#7c3aed;
+      --good:#3ddc97;
+      --bad:#ff5d7a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 700px at 25% 10%, rgba(255,46,166,.20), transparent 55%),
+        radial-gradient(1000px 600px at 70% 20%, rgba(124,58,237,.22), transparent 55%),
+        radial-gradient(900px 700px at 50% 90%, rgba(64,255,214,.10), transparent 55%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      padding:22px;
+    }
+
+    .wrap{max-width:1200px;margin:0 auto}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 16px;
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      box-shadow:0 18px 60px rgba(0,0,0,.35);
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;min-width:220px;
+    }
+    .logoBox{
+      width:56px;height:56px;border-radius:16px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden;
+    }
+    .logoBox img{width:75%;height:auto;display:block}
+    .brandText{display:flex;flex-direction:column;gap:2px}
+    .brandText .name{font-weight:900;letter-spacing:.2px}
+    .brandText .tag{font-size:12px;color:var(--muted2);font-weight:700}
+
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px;
+      transition:.15s transform,.15s background;
+      user-select:none;
+      text-decoration:none;
+    }
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.10)}
+    .btnPrimary{
+      border:none;
+      background:linear-gradient(90deg,var(--pink),var(--violet));
+      box-shadow:0 12px 30px rgba(124,58,237,.28);
+    }
+    .btnDanger{
+      background:rgba(255,93,122,.12);
+      border:1px solid rgba(255,93,122,.35);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+    .panel{
+      border:1px solid var(--stroke);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      box-shadow:0 18px 60px rgba(0,0,0,.30);
+      padding:16px;
+      min-height:440px;
+    }
+    .panel h2{margin:0 0 6px;font-size:18px;font-weight:900}
+    .muted{color:var(--muted);font-weight:700;font-size:12px;margin:0 0 14px}
+    label{display:block;font-weight:800;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    input,select{
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+      font-weight:700;
+    }
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btnRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    .btnWide{flex:1;min-width:180px;justify-content:center}
+    .msg{margin-top:10px;font-weight:800;font-size:12px;color:var(--muted)}
+    .msgErr{color:rgba(255,93,122,.95)}
+    .card{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:12px;
+      margin-top:12px;
+    }
+
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.10);font-size:13px}
+    th{color:var(--muted);text-transform:none;font-weight:900}
+    td{font-weight:700}
+    .right{text-align:right}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-weight:900;font-size:12px
+    }
+
+    /* Print */
+    @media print{
+      body{background:#fff;color:#000;padding:0}
+      .topbar,.panel:first-child{display:none !important}
+      .grid{display:block;margin:0}
+      .panel{border:none;box-shadow:none;background:#fff;padding:0}
+      .card{border:1px solid #ddd;background:#fff}
+      table th, table td{border-bottom:1px solid #ddd;color:#000}
+      .printHeader{
+        display:block !important;
+        text-align:center;
+        padding:14px 10px 10px;
+        border-bottom:1px solid #ddd;
+        margin-bottom:14px;
+      }
+      .printHeader img{width:90px;height:auto;display:block;margin:0 auto 8px}
+      .printHeader .t1{font-weight:900;font-size:18px}
+      .printHeader .t2{font-weight:700;font-size:12px;color:#222}
+      .printHeader .t3{font-weight:700;font-size:12px;color:#222;margin-top:4px}
+    }
+    .printHeader{display:none}
+  </style>
 </head>
 
 <body>
   <div class="wrap">
-
-    <div class="card topbar noPrint">
+    <div class="topbar">
       <div class="brand">
-        <img src="assets/logo.png" alt="Logo">
-        <div class="title">
-          <strong>Deruja Beauty Hub and Lounge</strong>
-          <span>Reports • Print ready</span>
+        <div class="logoBox">
+          <img src="assets/logo.png" alt="Deruja logo">
+        </div>
+        <div class="brandText">
+          <div class="name">Deruja Beauty Hub and Lounge</div>
+          <div class="tag">Reports • Print ready</div>
         </div>
       </div>
 
       <div class="actions">
-        <button class="btn btnGhost" id="backBtn">← Back</button>
-        <button class="btn btnPrimary" id="printBtn">🖨 Print</button>
-        <button class="btn btnDanger" id="logoutBtn">⎋ Logout</button>
+        <a class="btn" href="app.html">← Back</a>
+        <button class="btn btnPrimary" id="btnPrint">🖨 Print</button>
+        <button class="btn btnDanger" id="btnLogout">⏻ Logout</button>
       </div>
     </div>
 
     <div class="grid">
+      <div class="panel">
+        <h2>Report Selection</h2>
+        <p class="muted">Select date range or month then click Open</p>
 
-      <section class="card noPrint">
-        <div class="sectionTitle">
-          <h2>Report Selection</h2>
-          <p>Select date range or month then click Open</p>
-        </div>
-
-        <div class="pad">
-          <label>Daily / Range (From)</label>
-          <input id="fromDate" type="date">
-
-          <label>Daily / Range (To)</label>
-          <input id="toDate" type="date">
-
-          <label>Monthly report (month)</label>
-          <input id="monthKey" type="month">
-
-          <label>Monthly type</label>
-          <select id="monthType">
-            <option value="salary">Salary (by workers)</option>
-            <option value="rent">Paid rent</option>
-            <option value="water">Water bills</option>
-            <option value="electric">Electric bills</option>
-          </select>
-
-          <div class="btnGrid">
-            <button class="btn btnPrimary" id="openDaily">Open daily business</button>
-            <button class="btn btnGhost" id="openExpense">Open expenses</button>
-            <button class="btn btnPrimary" id="openMonthly">Open monthly must</button>
-            <button class="btn btnPrimary btnWide" id="openFull">Open full summary report</button>
+        <div class="row2">
+          <div>
+            <label>Daily / Range (From)</label>
+            <input type="date" id="fromDate">
           </div>
-
-          <div class="msg" id="msg"></div>
-        </div>
-      </section>
-
-      <section class="card" id="reportArea">
-        <div class="sectionTitle">
-          <h2>Report Output</h2>
-          <p class="smallMuted">Tip: Print button makes PDF / paper report</p>
-        </div>
-
-        <div class="pad">
-          <div class="printHeader" id="printHeader">
-            <div class="printHeaderRow">
-              <img src="assets/logo.png" alt="Logo">
-              <div>
-                <h1>Deruja Beauty Hub and Lounge</h1>
-                <div class="meta">
-                  No39/A new rosita bazar kotagala<br/>
-                  Mobile No: 051-224 4456 / 076-669 3456<br/>
-                  <span id="printReportTitle"></span>
-                </div>
-              </div>
-            </div>
+          <div>
+            <label>Daily / Range (To)</label>
+            <input type="date" id="toDate">
           </div>
-
-          <div class="reportBox" id="output">Select a report and click Open.</div>
         </div>
-      </section>
 
+        <div class="row2">
+          <div>
+            <label>Monthly report (month)</label>
+            <input type="month" id="monthPick">
+          </div>
+          <div>
+            <label>Monthly type</label>
+            <select id="monthlyType">
+              <option value="salary">Salary (by workers)</option>
+              <option value="must">Monthly must (salary/rent/water/electric)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btnRow">
+          <button class="btn btnPrimary btnWide" id="openDaily">Open daily business</button>
+          <button class="btn btnWide" id="openExpenses">Open expenses</button>
+          <button class="btn btnPrimary btnWide" id="openMonthly">Open monthly must</button>
+          <button class="btn btnPrimary btnWide" id="openFull">Open full summary report</button>
+        </div>
+
+        <div class="msg" id="msg"></div>
+      </div>
+
+      <div class="panel">
+        <div class="printHeader" id="printHeader">
+          <img src="assets/logo.png" alt="Logo">
+          <div class="t1">Deruja Beauty Hub and Lounge</div>
+          <div class="t2">No39/A new rosita bazar kotagala</div>
+          <div class="t2">Mobile No: 051-224 4456 / 076-669 3456</div>
+          <div class="t3" id="printMeta"></div>
+        </div>
+
+        <h2>Report Output</h2>
+        <p class="muted">Tip: Print button makes PDF / paper report</p>
+
+        <div id="output" class="card">
+          <div class="pill">Select a report and click Open.</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { getFirestore, collection, getDocs, query, where }
-      from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+<script type="module">
+  // ---- Firebase (CDN module) ----
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import {
+    getAuth,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB_pQt0C5X3R9tmVl8SRGT-DQ3eoNvdOEw",
-      authDomain: "salonsales-32a19.firebaseapp.com",
-      projectId: "salonsales-32a19",
-      storageBucket: "salonsales-32a19.firebasestorage.app",
-      messagingSenderId: "727392891815",
-      appId: "1:727392891815:web:1ea28d2335b6ee9a363c82"
-    };
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    where
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  // ✅ Your Firebase config (keep yours)
+  const firebaseConfig = {
+    apiKey: "PASTE_YOURS",
+    authDomain: "PASTE_YOURS",
+    projectId: "PASTE_YOURS",
+    storageBucket: "PASTE_YOURS",
+    messagingSenderId: "PASTE_YOURS",
+    appId: "PASTE_YOURS",
+  };
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = "index.html";
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // ---- UI ----
+  const msg = document.getElementById("msg");
+  const output = document.getElementById("output");
+  const printMeta = document.getElementById("printMeta");
+
+  const money = (n) => new Intl.NumberFormat("en-LK", {
+    style: "currency",
+    currency: "LKR",
+    minimumFractionDigits: 2
+  }).format(Number(n || 0));
+
+  function getRange(){
+    const from = document.getElementById("fromDate").value;
+    const to = document.getElementById("toDate").value;
+    if (!from || !to) return null;
+    if (from > to) return null;
+    return {from,to};
+  }
+
+  function monthKeysBetween(from, to){
+    const out = [];
+    const d1 = new Date(from + "T00:00:00");
+    const d2 = new Date(to + "T00:00:00");
+    const d = new Date(d1.getFullYear(), d1.getMonth(), 1);
+    const end = new Date(d2.getFullYear(), d2.getMonth(), 1);
+    while (d <= end){
+      out.push(d.toISOString().slice(0,7));
+      d.setMonth(d.getMonth() + 1);
+    }
+    return out;
+  }
+
+  function setPrintTitle(title, subtitle){
+    const now = new Date();
+    const stamp = now.toLocaleString();
+    printMeta.textContent = `${title} | ${subtitle} | Printed: ${stamp}`;
+  }
+
+  // ---- Print / Logout ----
+  document.getElementById("btnPrint").onclick = () => window.print();
+
+  document.getElementById("btnLogout").onclick = async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  };
+
+  // ---- REPORT: Daily business (sales + bank saving) ----
+  document.getElementById("openDaily").onclick = async () => {
+    msg.className="msg"; msg.textContent="";
+    const r = getRange();
+    if (!r){ msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+
+    setPrintTitle("Daily Business Report", `Range: ${r.from} to ${r.to}`);
+
+    const qDaily = query(
+      collection(db, "dailySales"),
+      where("date", ">=", r.from),
+      where("date", "<=", r.to)
+    );
+    const snap = await getDocs(qDaily);
+
+    const rows=[];
+    let totalBusiness=0, totalBank=0;
+
+    snap.forEach(d=>{
+      const x=d.data();
+      const business=Number(x.businessTotal||0);
+      const bank=Number(x.bankSaving||0);
+      totalBusiness+=business; totalBank+=bank;
+      rows.push({date:x.date, business, bank});
     });
 
-    document.getElementById("backBtn").onclick = () => window.location.href = "app.html";
-    document.getElementById("printBtn").onclick = () => window.print();
-    document.getElementById("logoutBtn").onclick = async () => {
-      await signOut(auth);
-      window.location.href="index.html";
-    };
+    rows.sort((a,b)=>a.date.localeCompare(b.date));
 
-    const msg = document.getElementById("msg");
-    const output = document.getElementById("output");
-    const printTitle = document.getElementById("printReportTitle");
+    output.innerHTML = `
+      <div style="font-weight:900;font-size:15px;">Daily Business Report</div>
+      <div class="muted">Range: ${r.from} to ${r.to}</div>
 
-    const money = (n) =>
-      new Intl.NumberFormat("en-LK", {
-        style: "currency",
-        currency: "LKR",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(Number(n || 0));
+      <table>
+        <thead><tr>
+          <th>Date</th><th>Business</th><th class="right">Bank saving</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(x=>`
+            <tr>
+              <td>${x.date}</td>
+              <td>${money(x.business)}</td>
+              <td class="right">${money(x.bank)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
 
-    function getRange() {
-      const from = document.getElementById("fromDate").value;
-      const to = document.getElementById("toDate").value;
-      if (!from || !to) return null;
-      if (from > to) return null;
-      return { from, to };
-    }
+      <div style="margin-top:10px;font-weight:900;">
+        Total business: ${money(totalBusiness)}<br/>
+        Total bank saving: ${money(totalBank)}
+      </div>
+    `;
+  };
 
-    function setPrintTitle(title, sub){
-      const now = new Date();
-      printTitle.textContent = `${title}${sub ? " | " + sub : ""} | Printed: ${now.toLocaleString()}`;
-    }
+  // ---- REPORT: Daily expenses only ----
+  document.getElementById("openExpenses").onclick = async () => {
+    msg.className="msg"; msg.textContent="";
+    const r = getRange();
+    if (!r){ msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
-    // Daily business report
-    document.getElementById("openDaily").onclick = async () => {
-      msg.className="msg";
-      msg.textContent="";
+    setPrintTitle("Total Expenses Report (Daily)", `Range: ${r.from} to ${r.to}`);
 
-      const r = getRange();
-      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+    const qDaily = query(
+      collection(db, "dailySales"),
+      where("date", ">=", r.from),
+      where("date", "<=", r.to)
+    );
+    const snap = await getDocs(qDaily);
 
-      setPrintTitle("Daily Business Report", `Range: ${r.from} to ${r.to}`);
+    const rows=[];
+    let totalExp=0;
 
-      const qy = query(
-        collection(db, "dailySales"),
-        where("date", ">=", r.from),
-        where("date", "<=", r.to)
-      );
+    snap.forEach(d=>{
+      const x=d.data();
+      const exp=Number(x.sameDayExpenses||0);
+      totalExp+=exp;
+      rows.push({date:x.date, exp});
+    });
 
-      const snap = await getDocs(qy);
-      let totalBusiness = 0;
-      let totalBank = 0;
+    rows.sort((a,b)=>a.date.localeCompare(b.date));
 
-      const rows = [];
-      snap.forEach(d => {
-        const x = d.data();
-        totalBusiness += Number(x.businessTotal || 0);
-        totalBank += Number(x.bankSaving || 0);
-        rows.push({ date: x.date, businessTotal: x.businessTotal || 0, bankSaving: x.bankSaving || 0 });
+    output.innerHTML = `
+      <div style="font-weight:900;font-size:15px;">Total Expenses Report (Daily)</div>
+      <div class="muted">Range: ${r.from} to ${r.to}</div>
+
+      <table>
+        <thead><tr>
+          <th>Date</th><th class="right">Same-day Expenses</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(x=>`
+            <tr>
+              <td>${x.date}</td>
+              <td class="right">${money(x.exp)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+
+      <div style="margin-top:10px;font-weight:900;">
+        Total daily expenses: ${money(totalExp)}
+      </div>
+    `;
+  };
+
+  // ---- REPORT: Monthly (salary by worker OR monthly must totals) ----
+  document.getElementById("openMonthly").onclick = async () => {
+    msg.className="msg"; msg.textContent="";
+    const monthKey = document.getElementById("monthPick").value;
+    if (!monthKey){ msg.className="msg msgErr"; msg.textContent="Select a month."; return; }
+
+    const type = document.getElementById("monthlyType").value;
+
+    if (type === "salary"){
+      setPrintTitle("Monthly Salary Report (By workers)", `Month: ${monthKey}`);
+
+      const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", monthKey), where("type","==","salary"));
+      const snap = await getDocs(qMust);
+
+      const byWorker = {};
+      snap.forEach(doc=>{
+        const x = doc.data();
+        const w = (x.workerName || "Unknown").trim();
+        const amt = Number(x.amount || 0);
+        byWorker[w] = (byWorker[w] || 0) + amt;
       });
 
-      rows.sort((a,b)=> a.date.localeCompare(b.date));
+      const rows = Object.entries(byWorker).map(([worker,total])=>({worker,total}));
+      rows.sort((a,b)=>b.total-a.total);
+      const totalAll = rows.reduce((s,x)=>s+x.total,0);
 
       output.innerHTML = `
-        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Daily Business Report</div>
-        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
-        <br/>
+        <div style="font-weight:900;font-size:15px;">Monthly Salary Report (By workers)</div>
+        <div class="muted">Month: ${monthKey}</div>
+
         <table>
-          <thead><tr><th>Date</th><th>Business</th><th>Bank saving</th></tr></thead>
+          <thead><tr><th>Worker</th><th class="right">Total salary paid</th></tr></thead>
           <tbody>
-            ${rows.map(x => `<tr><td>${x.date}</td><td>${money(x.businessTotal)}</td><td>${money(x.bankSaving)}</td></tr>`).join("")}
+            ${rows.map(r=>`
+              <tr><td>${r.worker}</td><td class="right">${money(r.total)}</td></tr>
+            `).join("")}
           </tbody>
         </table>
-        <br/>
-        <div style="font-weight:950;">Total business: ${money(totalBusiness)}</div>
-        <div style="font-weight:950;">Total bank saving: ${money(totalBank)}</div>
+
+        <div style="margin-top:10px;font-weight:900;">
+          Total salaries paid: ${money(totalAll)}
+        </div>
       `;
-    };
+      return;
+    }
 
-    // Total expenses report
-    document.getElementById("openExpense").onclick = async () => {
-      msg.className="msg";
-      msg.textContent="";
+    // monthly must totals
+    setPrintTitle("Monthly Must Report", `Month: ${monthKey}`);
 
-      const r = getRange();
-      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+    const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", monthKey));
+    const snap = await getDocs(qMust);
 
-      setPrintTitle("Total Expenses Report (Daily)", `Range: ${r.from} to ${r.to}`);
+    const byType = {salary:0,rent:0,water:0,electric:0,other:0};
+    let total=0;
+    snap.forEach(doc=>{
+      const x=doc.data();
+      const amt=Number(x.amount||0);
+      const t=(x.type||"other");
+      total += amt;
+      if (byType[t]===undefined) byType.other += amt;
+      else byType[t]+=amt;
+    });
 
-      const qDaily = query(
-        collection(db, "dailySales"),
-        where("date", ">=", r.from),
-        where("date", "<=", r.to)
-      );
+    output.innerHTML = `
+      <div style="font-weight:900;font-size:15px;">Monthly Must Report</div>
+      <div class="muted">Month: ${monthKey}</div>
 
-      const snap = await getDocs(qDaily);
-      let totalDailyExpenses = 0;
-      const rows = [];
+      <table>
+        <thead><tr><th>Type</th><th class="right">Total paid</th></tr></thead>
+        <tbody>
+          <tr><td>Salaries</td><td class="right">${money(byType.salary)}</td></tr>
+          <tr><td>Rent</td><td class="right">${money(byType.rent)}</td></tr>
+          <tr><td>Water</td><td class="right">${money(byType.water)}</td></tr>
+          <tr><td>Electric</td><td class="right">${money(byType.electric)}</td></tr>
+          ${byType.other>0 ? `<tr><td>Other</td><td class="right">${money(byType.other)}</td></tr>`:""}
+        </tbody>
+      </table>
 
-      snap.forEach(d => {
-        const x = d.data();
-        totalDailyExpenses += Number(x.sameDayExpenses || 0);
-        rows.push({ date: x.date, sameDayExpenses: x.sameDayExpenses || 0 });
+      <div style="margin-top:10px;font-weight:900;">
+        Total monthly must: ${money(total)}
+      </div>
+    `;
+  };
+
+  // ---- FULL SUMMARY (All-in-one + charts + tables + insights) ----
+  let chartLine=null, chartPie=null;
+
+  document.getElementById("openFull").onclick = async () => {
+    msg.className="msg"; msg.textContent="";
+    const r = getRange();
+    if (!r){ msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+
+    setPrintTitle("Full Summary Report (All-in-One)", `Range: ${r.from} to ${r.to}`);
+
+    // Daily
+    const qDaily = query(
+      collection(db,"dailySales"),
+      where("date", ">=", r.from),
+      where("date", "<=", r.to)
+    );
+    const snapDaily = await getDocs(qDaily);
+
+    let totalSales=0,totalDailyExp=0,totalBank=0;
+    const dailyRows=[];
+    snapDaily.forEach(d=>{
+      const x=d.data();
+      const business=Number(x.businessTotal||0);
+      const exp=Number(x.sameDayExpenses||0);
+      const bank=Number(x.bankSaving||0);
+      totalSales+=business; totalDailyExp+=exp; totalBank+=bank;
+      dailyRows.push({date:x.date,business,exp,bank,profit:(business-exp)});
+    });
+    dailyRows.sort((a,b)=>a.date.localeCompare(b.date));
+
+    // Monthly must for all months inside range
+    const months = monthKeysBetween(r.from,r.to);
+    const byType = {salary:0,rent:0,water:0,electric:0,other:0};
+    let totalMonthlyMust=0;
+
+    for (const mk of months){
+      const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", mk));
+      const snapMust = await getDocs(qMust);
+      snapMust.forEach(doc=>{
+        const x=doc.data();
+        const amt=Number(x.amount||0);
+        totalMonthlyMust += amt;
+        const t=(x.type||"other");
+        if (byType[t]===undefined) byType.other += amt;
+        else byType[t]+=amt;
       });
+    }
 
-      rows.sort((a,b)=> a.date.localeCompare(b.date));
+    const totalExpenses = totalDailyExp + totalMonthlyMust;
+    const netProfit = totalSales - totalExpenses;
 
-      output.innerHTML = `
-        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Total Expenses Report (Daily)</div>
-        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
-        <br/>
+    // Insights
+    const bestDay=[...dailyRows].sort((a,b)=>b.profit-a.profit)[0];
+    const worstDay=[...dailyRows].sort((a,b)=>a.profit-b.profit)[0];
+    const highestExpenseDay=[...dailyRows].sort((a,b)=>b.exp-a.exp)[0];
+
+    output.innerHTML = `
+      <div style="font-weight:950;font-size:15px;">Full Summary Report</div>
+      <div class="muted">Range: ${r.from} to ${r.to}</div>
+
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px;">
+        <div class="card">
+          <div class="muted">Total Sales</div>
+          <div style="font-size:18px;font-weight:950;">${money(totalSales)}</div>
+        </div>
+        <div class="card">
+          <div class="muted">Total Expenses</div>
+          <div style="font-size:18px;font-weight:950;">${money(totalExpenses)}</div>
+          <div class="muted" style="margin-top:6px;">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthlyMust)}</div>
+        </div>
+        <div class="card">
+          <div class="muted">Net Profit</div>
+          <div style="font-size:18px;font-weight:950;">${money(netProfit)}</div>
+          <div class="muted" style="margin-top:6px;">(Profit = Sales − Expenses)</div>
+        </div>
+        <div class="card">
+          <div class="muted">Bank Saving (separate)</div>
+          <div style="font-size:18px;font-weight:950;">${money(totalBank)}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:900;margin-bottom:8px;">Quick Insights</div>
+        <div class="muted" style="line-height:1.8;">
+          ${bestDay ? `✅ Best profit day: <b>${bestDay.date}</b> (${money(bestDay.profit)})<br/>`:""}
+          ${worstDay ? `⚠️ Lowest profit day: <b>${worstDay.date}</b> (${money(worstDay.profit)})<br/>`:""}
+          ${highestExpenseDay ? `💸 Highest expense day: <b>${highestExpenseDay.date}</b> (${money(highestExpenseDay.exp)})`:""}
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:900;margin-bottom:8px;">Daily Sales vs Daily Expenses</div>
+        <canvas id="chartLine" height="140"></canvas>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:900;margin-bottom:8px;">Expense Breakdown (Monthly Must)</div>
+        <canvas id="chartPie" height="160"></canvas>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:900;margin:6px 0 10px;">Daily Summary Table</div>
         <table>
-          <thead><tr><th>Date</th><th>Same-day Expenses</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Sales</th>
+              <th>Daily expenses</th>
+              <th>Bank saving</th>
+              <th class="right">Profit (day)</th>
+            </tr>
+          </thead>
           <tbody>
-            ${rows.map(x => `<tr><td>${x.date}</td><td>${money(x.sameDayExpenses)}</td></tr>`).join("")}
-          </tbody>
-        </table>
-        <br/>
-        <div style="font-weight:950;">Total daily expenses: ${money(totalDailyExpenses)}</div>
-      `;
-    };
-
-    // Monthly must report
-    document.getElementById("openMonthly").onclick = async () => {
-      msg.className="msg";
-      msg.textContent="";
-
-      const monthKey = document.getElementById("monthKey").value;
-      const type = document.getElementById("monthType").value;
-      if (!monthKey) { msg.className="msg msgErr"; msg.textContent="Select month."; return; }
-
-      const typeTitle =
-        (type === "salary") ? "Monthly Salary Report (By workers)" :
-        (type === "rent") ? "Monthly Rent Report" :
-        (type === "water") ? "Monthly Water Bill Report" :
-        "Monthly Electric Bill Report";
-
-      setPrintTitle(typeTitle, `Month: ${monthKey}`);
-
-      const qMonthly = query(
-        collection(db, "monthlyExpenses"),
-        where("monthKey", "==", monthKey),
-        where("type", "==", type)
-      );
-
-      const snap = await getDocs(qMonthly);
-      let total = 0;
-      const items = [];
-      snap.forEach(d => {
-        const x = d.data();
-        total += Number(x.amount || 0);
-        items.push(x);
-      });
-
-      if (type === "salary") {
-        const byWorker = {};
-        items.forEach(x => {
-          const w = (x.workerName || "Unknown").trim() || "Unknown";
-          byWorker[w] = (byWorker[w] || 0) + Number(x.amount || 0);
-        });
-
-        const workers = Object.entries(byWorker).sort((a,b)=> b[1]-a[1]);
-
-        output.innerHTML = `
-          <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Monthly Salary Report (By workers)</div>
-          <div class="smallMuted">Month: ${monthKey}</div>
-          <br/>
-          <table>
-            <thead>
+            ${dailyRows.map(x=>`
               <tr>
-                <th style="width:70%;">Worker</th>
-                <th style="width:30%; text-align:right;">Total salary paid</th>
+                <td>${x.date}</td>
+                <td>${money(x.business)}</td>
+                <td>${money(x.exp)}</td>
+                <td>${money(x.bank)}</td>
+                <td class="right">${money(x.profit)}</td>
               </tr>
-            </thead>
-            <tbody>
-              ${workers.map(([w,amt]) => `<tr><td>${w}</td><td>${money(amt)}</td></tr>`).join("")}
-            </tbody>
-          </table>
-          <br/>
-          <div style="font-weight:950;">Total salaries paid: ${money(total)}</div>
-        `;
-      } else {
-        output.innerHTML = `
-          <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Monthly Must Report</div>
-          <div class="smallMuted">Type: ${type.toUpperCase()} | Month: ${monthKey}</div>
-          <br/>
-          <table>
-            <thead><tr><th>Paid Date</th><th>Amount</th><th>Note</th></tr></thead>
-            <tbody>
-              ${items.sort((a,b)=> (a.paidDate||"").localeCompare(b.paidDate||""))
-                .map(x => `<tr><td>${x.paidDate||""}</td><td>${money(x.amount)}</td><td>${x.note||""}</td></tr>`).join("")}
-            </tbody>
-          </table>
-          <br/>
-          <div style="font-weight:950;">Total paid: ${money(total)}</div>
-        `;
-      }
-    };
+            `).join("")}
+          </tbody>
+        </table>
 
-    // ---------- FULL SUMMARY (ALL IN ONE + CHARTS) ----------
-    function monthKeysBetween(from, to){
-      const out = [];
-      const d1 = new Date(from + "T00:00:00");
-      const d2 = new Date(to + "T00:00:00");
-      const d = new Date(d1.getFullYear(), d1.getMonth(), 1);
-      const end = new Date(d2.getFullYear(), d2.getMonth(), 1);
-      while (d <= end){
-        out.push(d.toISOString().slice(0,7));
-        d.setMonth(d.getMonth() + 1);
-      }
-      return out;
-    }
+        <div style="font-weight:900;margin:18px 0 10px;">Monthly Must Breakdown (in selected range)</div>
+        <table>
+          <thead><tr><th>Type</th><th class="right">Total</th></tr></thead>
+          <tbody>
+            <tr><td>Salaries</td><td class="right">${money(byType.salary)}</td></tr>
+            <tr><td>Rent</td><td class="right">${money(byType.rent)}</td></tr>
+            <tr><td>Water</td><td class="right">${money(byType.water)}</td></tr>
+            <tr><td>Electric</td><td class="right">${money(byType.electric)}</td></tr>
+            ${byType.other>0 ? `<tr><td>Other</td><td class="right">${money(byType.other)}</td></tr>`:""}
+          </tbody>
+          <tfoot>
+            <tr><th>Total monthly must</th><th class="right">${money(totalMonthlyMust)}</th></tr>
+          </tfoot>
+        </table>
+      </div>
+    `;
 
-    let chartLine = null;
-    let chartPie = null;
+    // charts
+    const labels = dailyRows.map(x=>x.date);
+    const salesData = dailyRows.map(x=>x.business);
+    const expData = dailyRows.map(x=>x.exp);
 
-    document.getElementById("openFull").onclick = async () => {
-      msg.className="msg"; msg.textContent="";
+    if (chartLine) chartLine.destroy();
+    if (chartPie) chartPie.destroy();
 
-      const r = getRange();
-      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+    chartLine = new Chart(document.getElementById("chartLine"), {
+      type:"line",
+      data:{labels, datasets:[
+        {label:"Sales", data:salesData},
+        {label:"Daily Expenses", data:expData}
+      ]},
+      options:{responsive:true}
+    });
 
-      setPrintTitle("Full Summary Report (All-in-One)", `Range: ${r.from} to ${r.to}`);
-
-      const qDaily = query(
-        collection(db, "dailySales"),
-        where("date", ">=", r.from),
-        where("date", "<=", r.to)
-      );
-      const snapDaily = await getDocs(qDaily);
-
-      let totalSales = 0, totalDailyExp = 0, totalBank = 0;
-      const dailyRows = [];
-      snapDaily.forEach(d => {
-        const x = d.data();
-        const business = Number(x.businessTotal || 0);
-        const exp = Number(x.sameDayExpenses || 0);
-        const bank = Number(x.bankSaving || 0);
-        totalSales += business;
-        totalDailyExp += exp;
-        totalBank += bank;
-        dailyRows.push({ date:x.date, business, exp, bank });
-      });
-      dailyRows.sort((a,b)=>a.date.localeCompare(b.date));
-
-      const months = monthKeysBetween(r.from, r.to);
-      const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
-      let totalMonthlyMust = 0;
-
-      for (const mk of months){
-        const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", mk));
-        const snapMust = await getDocs(qMust);
-        snapMust.forEach(doc => {
-          const x = doc.data();
-          const amt = Number(x.amount || 0);
-          totalMonthlyMust += amt;
-
-          const t = (x.type || "other");
-          if (byType[t] === undefined) byType.other += amt;
-          else byType[t] += amt;
-        });
-      }
-
-      const totalExpenses = totalDailyExp + totalMonthlyMust;
-      const netProfit = totalSales - totalExpenses;
-
-      output.innerHTML = `
-        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Full Summary Report</div>
-        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
-        <br/>
-
-        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-          <div class="card" style="padding:12px;">
-            <div class="smallMuted">Total Sales</div>
-            <div style="font-size:18px; font-weight:950;">${money(totalSales)}</div>
-          </div>
-
-          <div class="card" style="padding:12px;">
-            <div class="smallMuted">Total Expenses</div>
-            <div style="font-size:18px; font-weight:950;">${money(totalExpenses)}</div>
-            <div class="smallMuted" style="margin-top:6px;">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthlyMust)}</div>
-          </div>
-
-          <div class="card" style="padding:12px;">
-            <div class="smallMuted">Net Profit</div>
-            <div style="font-size:18px; font-weight:950;">${money(netProfit)}</div>
-          </div>
-
-          <div class="card" style="padding:12px;">
-            <div class="smallMuted">Bank Saving (separate)</div>
-            <div style="font-size:18px; font-weight:950;">${money(totalBank)}</div>
-          </div>
-        </div>
-
-        <br/>
-
-        <div style="display:grid; grid-template-columns: 1fr; gap: 12px;">
-          <div class="card" style="padding:12px;">
-            <div style="font-weight:900; margin-bottom:8px;">Daily Sales vs Daily Expenses</div>
-            <canvas id="chartLine" height="140"></canvas>
-          </div>
-
-          <div class="card" style="padding:12px;">
-            <div style="font-weight:900; margin-bottom:8px;">Expense Breakdown</div>
-            <canvas id="chartPie" height="160"></canvas>
-          </div>
-        </div>
-      `;
-
-      const labels = dailyRows.map(x=>x.date);
-      const salesData = dailyRows.map(x=>x.business);
-      const expData = dailyRows.map(x=>x.exp);
-
-      if (chartLine) chartLine.destroy();
-      if (chartPie) chartPie.destroy();
-
-      chartLine = new Chart(document.getElementById("chartLine"), {
-        type: "line",
-        data: { labels, datasets: [
-          { label:"Sales", data: salesData },
-          { label:"Daily Expenses", data: expData }
-        ]},
-        options: { responsive:true, plugins:{ legend:{ display:true } } }
-      });
-
-      chartPie = new Chart(document.getElementById("chartPie"), {
-        type: "doughnut",
-        data: { labels:["Salary","Rent","Water","Electric","Other"], datasets:[{
-          data:[byType.salary,byType.rent,byType.water,byType.electric,byType.other]
-        }]},
-        options: { responsive:true, plugins:{ legend:{ display:true } } }
-      });
-    };
-  </script>
+    chartPie = new Chart(document.getElementById("chartPie"), {
+      type:"doughnut",
+      data:{
+        labels:["Salary","Rent","Water","Electric","Other"],
+        datasets:[{data:[byType.salary,byType.rent,byType.water,byType.electric,byType.other]}]
+      },
+      options:{responsive:true}
+    });
+  };
+</script>
 </body>
 </html>
