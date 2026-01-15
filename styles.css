@@ -296,3 +296,89 @@ th{
   .reportBox{ background:#fff !important; border:0 !important; }
   .printHeader{ display:block !important; }
 }
+/* ---------- PRINT LAYOUT FIXES (CENTER + ALIGNMENT) ---------- */
+
+/* Only used in print mode */
+@media print {
+  /* Hide the app UI and keep only report area clean */
+  .noPrint { display: none !important; }
+
+  body { background: #fff !important; color: #000 !important; }
+  .wrap { max-width: 100% !important; padding: 0 !important; }
+  .card { box-shadow: none !important; background: #fff !important; border: 0 !important; }
+  .reportBox { background:#fff !important; border:0 !important; padding: 0 !important; }
+
+  /* Remove extra gaps */
+  .sectionTitle { padding: 0 0 10px 0 !important; }
+  .pad { padding: 0 !important; }
+}
+
+/* Print header centered */
+.printHeader{
+  display:none;
+  margin: 0 0 14px 0;
+  padding: 0 0 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.18);
+}
+
+@media print {
+  .printHeader{ display:block !important; }
+}
+
+/* Center everything in header */
+.printHeaderRow{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.printHeader img{
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  display:block;
+  margin: 0 auto;
+}
+
+.printHeader h1{
+  font-size: 20px;
+  margin: 0;
+  font-weight: 900;
+}
+
+.printHeader .meta{
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 1.45;
+  color: rgba(0,0,0,0.85);
+  font-weight: 650;
+}
+
+/* Table alignment: clean columns + right aligned money */
+@media print {
+  table{ width:100% !important; border-collapse: collapse !important; }
+  th, td{
+    padding: 10px 10px !important;
+    border-bottom: 1px solid rgba(0,0,0,0.15) !important;
+    font-size: 13px !important;
+    vertical-align: top !important;
+  }
+  th{
+    font-weight: 900 !important;
+    color: #000 !important;
+  }
+
+  /* Make last column (Amount) right aligned */
+  th:last-child, td:last-child{
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+
+  /* First column left */
+  th:first-child, td:first-child{
+    text-align: left !important;
+  }
+}
