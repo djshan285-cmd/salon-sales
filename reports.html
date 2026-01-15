@@ -293,6 +293,15 @@
     currency: "LKR",
     minimumFractionDigits: 2
   }).format(Number(n || 0));
+  const fmtDate = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso + "T00:00:00");
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const dd = String(d.getDate()).padStart(2,"0");
+    const mm = months[d.getMonth()];
+    const yy = String(d.getFullYear()).slice(-2);
+    return `${dd}-${mm}-${yy}`; // 01-Jan-26
+  };
 
   function getRange(){
     const from = document.getElementById("fromDate").value;
