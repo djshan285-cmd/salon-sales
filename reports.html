@@ -1,209 +1,453 @@
-// ---------- FULL SUMMARY (ALL IN ONE + CHARTS + TABLES) ----------
-function monthKeysBetween(from, to){
-  const out = [];
-  const d1 = new Date(from + "T00:00:00");
-  const d2 = new Date(to + "T00:00:00");
-  const d = new Date(d1.getFullYear(), d1.getMonth(), 1);
-  const end = new Date(d2.getFullYear(), d2.getMonth(), 1);
-  while (d <= end){
-    out.push(d.toISOString().slice(0,7));
-    d.setMonth(d.getMonth() + 1);
-  }
-  return out;
-}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Deruja Beauty Hub and Lounge - Reports</title>
 
-let chartLine = null;
-let chartPie = null;
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
 
-document.getElementById("openFull").onclick = async () => {
-  msg.className="msg"; msg.textContent="";
+<body>
+  <div class="wrap">
 
-  const r = getRange();
-  if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+    <div class="card topbar noPrint">
+      <div class="brand">
+        <img src="assets/logo.png" alt="Logo">
+        <div class="title">
+          <strong>Deruja Beauty Hub and Lounge</strong>
+          <span>Reports • Print ready</span>
+        </div>
+      </div>
 
-  setPrintTitle("Full Summary Report (All-in-One)", `Range: ${r.from} to ${r.to}`);
+      <div class="actions">
+        <button class="btn btnGhost" id="backBtn">← Back</button>
+        <button class="btn btnPrimary" id="printBtn">🖨 Print</button>
+        <button class="btn btnDanger" id="logoutBtn">⎋ Logout</button>
+      </div>
+    </div>
 
-  // ---- DAILY SALES (range) ----
-  const qDaily = query(
-    collection(db, "dailySales"),
-    where("date", ">=", r.from),
-    where("date", "<=", r.to)
-  );
-  const snapDaily = await getDocs(qDaily);
+    <div class="grid">
 
-  let totalSales = 0, totalDailyExp = 0, totalBank = 0;
-  const dailyRows = [];
-  snapDaily.forEach(d => {
-    const x = d.data();
-    const business = Number(x.businessTotal || 0);
-    const exp = Number(x.sameDayExpenses || 0);
-    const bank = Number(x.bankSaving || 0);
-    totalSales += business;
-    totalDailyExp += exp;
-    totalBank += bank;
-    dailyRows.push({ date:x.date, business, exp, bank, profit: (business - exp) });
-  });
-  dailyRows.sort((a,b)=>a.date.localeCompare(b.date));
+      <section class="card noPrint">
+        <div class="sectionTitle">
+          <h2>Report Selection</h2>
+          <p>Select date range or month then click Open</p>
+        </div>
 
-  // Best/worst day stats
-  const bestDay = [...dailyRows].sort((a,b)=>b.profit-a.profit)[0];
-  const worstDay = [...dailyRows].sort((a,b)=>a.profit-b.profit)[0];
-  const highestExpenseDay = [...dailyRows].sort((a,b)=>b.exp-a.exp)[0];
+        <div class="pad">
+          <label>Daily / Range (From)</label>
+          <input id="fromDate" type="date">
 
-  // ---- MONTHLY MUST (for all months in range) ----
-  const months = monthKeysBetween(r.from, r.to);
-  const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
-  let totalMonthlyMust = 0;
+          <label>Daily / Range (To)</label>
+          <input id="toDate" type="date">
 
-  for (const mk of months){
-    const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", mk));
-    const snapMust = await getDocs(qMust);
-    snapMust.forEach(doc => {
-      const x = doc.data();
-      const amt = Number(x.amount || 0);
-      totalMonthlyMust += amt;
+          <label>Monthly report (month)</label>
+          <input id="monthKey" type="month">
 
-      const t = (x.type || "other");
-      if (byType[t] === undefined) byType.other += amt;
-      else byType[t] += amt;
+          <label>Monthly type</label>
+          <select id="monthType">
+            <option value="salary">Salary (by workers)</option>
+            <option value="rent">Paid rent</option>
+            <option value="water">Water bills</option>
+            <option value="electric">Electric bills</option>
+          </select>
+
+          <div class="btnGrid">
+            <button class="btn btnPrimary" id="openDaily">Open daily business</button>
+            <button class="btn btnGhost" id="openExpense">Open expenses</button>
+            <button class="btn btnPrimary" id="openMonthly">Open monthly must</button>
+            <button class="btn btnPrimary btnWide" id="openFull">Open full summary report</button>
+          </div>
+
+          <div class="msg" id="msg"></div>
+        </div>
+      </section>
+
+      <section class="card" id="reportArea">
+        <div class="sectionTitle">
+          <h2>Report Output</h2>
+          <p class="smallMuted">Tip: Print button makes PDF / paper report</p>
+        </div>
+
+        <div class="pad">
+          <div class="printHeader" id="printHeader">
+            <div class="printHeaderRow">
+              <img src="assets/logo.png" alt="Logo">
+              <div>
+                <h1>Deruja Beauty Hub and Lounge</h1>
+                <div class="meta">
+                  No39/A new rosita bazar kotagala<br/>
+                  Mobile No: 051-224 4456 / 076-669 3456<br/>
+                  <span id="printReportTitle"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reportBox" id="output">Select a report and click Open.</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, collection, getDocs, query, where }
+      from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_pQt0C5X3R9tmVl8SRGT-DQ3eoNvdOEw",
+      authDomain: "salonsales-32a19.firebaseapp.com",
+      projectId: "salonsales-32a19",
+      storageBucket: "salonsales-32a19.firebasestorage.app",
+      messagingSenderId: "727392891815",
+      appId: "1:727392891815:web:1ea28d2335b6ee9a363c82"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "index.html";
     });
-  }
 
-  const totalExpenses = totalDailyExp + totalMonthlyMust;
-  const netProfit = totalSales - totalExpenses;
+    document.getElementById("backBtn").onclick = () => window.location.href = "app.html";
+    document.getElementById("printBtn").onclick = () => window.print();
+    document.getElementById("logoutBtn").onclick = async () => {
+      await signOut(auth);
+      window.location.href="index.html";
+    };
 
-  // Table HTML (Daily)
-  const dailyTableHTML = `
-    <div style="font-weight:900; margin: 8px 0 10px;">Daily Summary Table</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Sales</th>
-          <th>Daily expenses</th>
-          <th>Bank saving</th>
-          <th style="text-align:right;">Profit (day)</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${dailyRows.map(x => `
-          <tr>
-            <td>${x.date}</td>
-            <td>${money(x.business)}</td>
-            <td>${money(x.exp)}</td>
-            <td>${money(x.bank)}</td>
-            <td style="text-align:right;">${money(x.profit)}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
+    const msg = document.getElementById("msg");
+    const output = document.getElementById("output");
+    const printTitle = document.getElementById("printReportTitle");
 
-  // Table HTML (Monthly must)
-  const monthlyTableHTML = `
-    <div style="font-weight:900; margin: 18px 0 10px;">Monthly Must Breakdown (within selected range)</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th style="text-align:right;">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Salaries</td><td style="text-align:right;">${money(byType.salary)}</td></tr>
-        <tr><td>Rent</td><td style="text-align:right;">${money(byType.rent)}</td></tr>
-        <tr><td>Water</td><td style="text-align:right;">${money(byType.water)}</td></tr>
-        <tr><td>Electric</td><td style="text-align:right;">${money(byType.electric)}</td></tr>
-        ${byType.other > 0 ? `<tr><td>Other</td><td style="text-align:right;">${money(byType.other)}</td></tr>` : ""}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th>Total monthly must</th>
-          <th style="text-align:right;">${money(totalMonthlyMust)}</th>
-        </tr>
-      </tfoot>
-    </table>
-  `;
+    const money = (n) =>
+      new Intl.NumberFormat("en-LK", {
+        style: "currency",
+        currency: "LKR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(Number(n || 0));
 
-  // Main Output
-  output.innerHTML = `
-    <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Full Summary Report</div>
-    <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
-    <br/>
+    function getRange() {
+      const from = document.getElementById("fromDate").value;
+      const to = document.getElementById("toDate").value;
+      if (!from || !to) return null;
+      if (from > to) return null;
+      return { from, to };
+    }
 
-    <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-      <div class="card" style="padding:12px;">
-        <div class="smallMuted">Total Sales</div>
-        <div style="font-size:18px; font-weight:950;">${money(totalSales)}</div>
-      </div>
+    function setPrintTitle(title, sub){
+      const now = new Date();
+      printTitle.textContent = `${title}${sub ? " | " + sub : ""} | Printed: ${now.toLocaleString()}`;
+    }
 
-      <div class="card" style="padding:12px;">
-        <div class="smallMuted">Total Expenses</div>
-        <div style="font-size:18px; font-weight:950;">${money(totalExpenses)}</div>
-        <div class="smallMuted" style="margin-top:6px;">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthlyMust)}</div>
-      </div>
+    // Daily business report
+    document.getElementById("openDaily").onclick = async () => {
+      msg.className="msg";
+      msg.textContent="";
 
-      <div class="card" style="padding:12px;">
-        <div class="smallMuted">Net Profit</div>
-        <div style="font-size:18px; font-weight:950;">${money(netProfit)}</div>
-        <div class="smallMuted" style="margin-top:6px;">(Profit = Sales − Expenses)</div>
-      </div>
+      const r = getRange();
+      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
-      <div class="card" style="padding:12px;">
-        <div class="smallMuted">Bank Saving (not included in profit)</div>
-        <div style="font-size:18px; font-weight:950;">${money(totalBank)}</div>
-      </div>
-    </div>
+      setPrintTitle("Daily Business Report", `Range: ${r.from} to ${r.to}`);
 
-    <br/>
+      const qy = query(
+        collection(db, "dailySales"),
+        where("date", ">=", r.from),
+        where("date", "<=", r.to)
+      );
 
-    <div class="card" style="padding:12px; margin-bottom: 12px;">
-      <div style="font-weight:900; margin-bottom:8px;">Quick Insights</div>
-      <div class="smallMuted" style="line-height:1.8;">
-        ${bestDay ? `✅ Best profit day: <b>${bestDay.date}</b> (${money(bestDay.profit)})<br/>` : ""}
-        ${worstDay ? `⚠️ Lowest profit day: <b>${worstDay.date}</b> (${money(worstDay.profit)})<br/>` : ""}
-        ${highestExpenseDay ? `💸 Highest expense day: <b>${highestExpenseDay.date}</b> (${money(highestExpenseDay.exp)})` : ""}
-      </div>
-    </div>
+      const snap = await getDocs(qy);
+      let totalBusiness = 0;
+      let totalBank = 0;
 
-    <div class="card" style="padding:12px; margin-bottom: 12px;">
-      <div style="font-weight:900; margin-bottom:8px;">Daily Sales vs Daily Expenses</div>
-      <canvas id="chartLine" height="140"></canvas>
-    </div>
+      const rows = [];
+      snap.forEach(d => {
+        const x = d.data();
+        totalBusiness += Number(x.businessTotal || 0);
+        totalBank += Number(x.bankSaving || 0);
+        rows.push({ date: x.date, businessTotal: x.businessTotal || 0, bankSaving: x.bankSaving || 0 });
+      });
 
-    <div class="card" style="padding:12px; margin-bottom: 12px;">
-      <div style="font-weight:900; margin-bottom:8px;">Expense Breakdown (Monthly Must)</div>
-      <canvas id="chartPie" height="160"></canvas>
-    </div>
+      rows.sort((a,b)=> a.date.localeCompare(b.date));
 
-    <div class="card" style="padding:12px;">
-      ${dailyTableHTML}
-      ${monthlyTableHTML}
-    </div>
-  `;
+      output.innerHTML = `
+        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Daily Business Report</div>
+        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
+        <br/>
+        <table>
+          <thead><tr><th>Date</th><th>Business</th><th>Bank saving</th></tr></thead>
+          <tbody>
+            ${rows.map(x => `<tr><td>${x.date}</td><td>${money(x.businessTotal)}</td><td>${money(x.bankSaving)}</td></tr>`).join("")}
+          </tbody>
+        </table>
+        <br/>
+        <div style="font-weight:950;">Total business: ${money(totalBusiness)}</div>
+        <div style="font-weight:950;">Total bank saving: ${money(totalBank)}</div>
+      `;
+    };
 
-  // Charts data
-  const labels = dailyRows.map(x=>x.date);
-  const salesData = dailyRows.map(x=>x.business);
-  const expData = dailyRows.map(x=>x.exp);
+    // Total expenses report
+    document.getElementById("openExpense").onclick = async () => {
+      msg.className="msg";
+      msg.textContent="";
 
-  if (chartLine) chartLine.destroy();
-  if (chartPie) chartPie.destroy();
+      const r = getRange();
+      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
-  chartLine = new Chart(document.getElementById("chartLine"), {
-    type: "line",
-    data: { labels, datasets: [
-      { label:"Sales", data: salesData },
-      { label:"Daily Expenses", data: expData }
-    ]},
-    options: { responsive:true, plugins:{ legend:{ display:true } } }
-  });
+      setPrintTitle("Total Expenses Report (Daily)", `Range: ${r.from} to ${r.to}`);
 
-  chartPie = new Chart(document.getElementById("chartPie"), {
-    type: "doughnut",
-    data: { labels:["Salary","Rent","Water","Electric","Other"], datasets:[{
-      data:[byType.salary,byType.rent,byType.water,byType.electric,byType.other]
-    }]},
-    options: { responsive:true, plugins:{ legend:{ display:true } } }
-  });
-};
+      const qDaily = query(
+        collection(db, "dailySales"),
+        where("date", ">=", r.from),
+        where("date", "<=", r.to)
+      );
+
+      const snap = await getDocs(qDaily);
+      let totalDailyExpenses = 0;
+      const rows = [];
+
+      snap.forEach(d => {
+        const x = d.data();
+        totalDailyExpenses += Number(x.sameDayExpenses || 0);
+        rows.push({ date: x.date, sameDayExpenses: x.sameDayExpenses || 0 });
+      });
+
+      rows.sort((a,b)=> a.date.localeCompare(b.date));
+
+      output.innerHTML = `
+        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Total Expenses Report (Daily)</div>
+        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
+        <br/>
+        <table>
+          <thead><tr><th>Date</th><th>Same-day Expenses</th></tr></thead>
+          <tbody>
+            ${rows.map(x => `<tr><td>${x.date}</td><td>${money(x.sameDayExpenses)}</td></tr>`).join("")}
+          </tbody>
+        </table>
+        <br/>
+        <div style="font-weight:950;">Total daily expenses: ${money(totalDailyExpenses)}</div>
+      `;
+    };
+
+    // Monthly must report
+    document.getElementById("openMonthly").onclick = async () => {
+      msg.className="msg";
+      msg.textContent="";
+
+      const monthKey = document.getElementById("monthKey").value;
+      const type = document.getElementById("monthType").value;
+      if (!monthKey) { msg.className="msg msgErr"; msg.textContent="Select month."; return; }
+
+      const typeTitle =
+        (type === "salary") ? "Monthly Salary Report (By workers)" :
+        (type === "rent") ? "Monthly Rent Report" :
+        (type === "water") ? "Monthly Water Bill Report" :
+        "Monthly Electric Bill Report";
+
+      setPrintTitle(typeTitle, `Month: ${monthKey}`);
+
+      const qMonthly = query(
+        collection(db, "monthlyExpenses"),
+        where("monthKey", "==", monthKey),
+        where("type", "==", type)
+      );
+
+      const snap = await getDocs(qMonthly);
+      let total = 0;
+      const items = [];
+      snap.forEach(d => {
+        const x = d.data();
+        total += Number(x.amount || 0);
+        items.push(x);
+      });
+
+      if (type === "salary") {
+        const byWorker = {};
+        items.forEach(x => {
+          const w = (x.workerName || "Unknown").trim() || "Unknown";
+          byWorker[w] = (byWorker[w] || 0) + Number(x.amount || 0);
+        });
+
+        const workers = Object.entries(byWorker).sort((a,b)=> b[1]-a[1]);
+
+        output.innerHTML = `
+          <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Monthly Salary Report (By workers)</div>
+          <div class="smallMuted">Month: ${monthKey}</div>
+          <br/>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:70%;">Worker</th>
+                <th style="width:30%; text-align:right;">Total salary paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${workers.map(([w,amt]) => `<tr><td>${w}</td><td>${money(amt)}</td></tr>`).join("")}
+            </tbody>
+          </table>
+          <br/>
+          <div style="font-weight:950;">Total salaries paid: ${money(total)}</div>
+        `;
+      } else {
+        output.innerHTML = `
+          <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Monthly Must Report</div>
+          <div class="smallMuted">Type: ${type.toUpperCase()} | Month: ${monthKey}</div>
+          <br/>
+          <table>
+            <thead><tr><th>Paid Date</th><th>Amount</th><th>Note</th></tr></thead>
+            <tbody>
+              ${items.sort((a,b)=> (a.paidDate||"").localeCompare(b.paidDate||""))
+                .map(x => `<tr><td>${x.paidDate||""}</td><td>${money(x.amount)}</td><td>${x.note||""}</td></tr>`).join("")}
+            </tbody>
+          </table>
+          <br/>
+          <div style="font-weight:950;">Total paid: ${money(total)}</div>
+        `;
+      }
+    };
+
+    // ---------- FULL SUMMARY (ALL IN ONE + CHARTS) ----------
+    function monthKeysBetween(from, to){
+      const out = [];
+      const d1 = new Date(from + "T00:00:00");
+      const d2 = new Date(to + "T00:00:00");
+      const d = new Date(d1.getFullYear(), d1.getMonth(), 1);
+      const end = new Date(d2.getFullYear(), d2.getMonth(), 1);
+      while (d <= end){
+        out.push(d.toISOString().slice(0,7));
+        d.setMonth(d.getMonth() + 1);
+      }
+      return out;
+    }
+
+    let chartLine = null;
+    let chartPie = null;
+
+    document.getElementById("openFull").onclick = async () => {
+      msg.className="msg"; msg.textContent="";
+
+      const r = getRange();
+      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+
+      setPrintTitle("Full Summary Report (All-in-One)", `Range: ${r.from} to ${r.to}`);
+
+      const qDaily = query(
+        collection(db, "dailySales"),
+        where("date", ">=", r.from),
+        where("date", "<=", r.to)
+      );
+      const snapDaily = await getDocs(qDaily);
+
+      let totalSales = 0, totalDailyExp = 0, totalBank = 0;
+      const dailyRows = [];
+      snapDaily.forEach(d => {
+        const x = d.data();
+        const business = Number(x.businessTotal || 0);
+        const exp = Number(x.sameDayExpenses || 0);
+        const bank = Number(x.bankSaving || 0);
+        totalSales += business;
+        totalDailyExp += exp;
+        totalBank += bank;
+        dailyRows.push({ date:x.date, business, exp, bank });
+      });
+      dailyRows.sort((a,b)=>a.date.localeCompare(b.date));
+
+      const months = monthKeysBetween(r.from, r.to);
+      const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
+      let totalMonthlyMust = 0;
+
+      for (const mk of months){
+        const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", mk));
+        const snapMust = await getDocs(qMust);
+        snapMust.forEach(doc => {
+          const x = doc.data();
+          const amt = Number(x.amount || 0);
+          totalMonthlyMust += amt;
+
+          const t = (x.type || "other");
+          if (byType[t] === undefined) byType.other += amt;
+          else byType[t] += amt;
+        });
+      }
+
+      const totalExpenses = totalDailyExp + totalMonthlyMust;
+      const netProfit = totalSales - totalExpenses;
+
+      output.innerHTML = `
+        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Full Summary Report</div>
+        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
+        <br/>
+
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Total Sales</div>
+            <div style="font-size:18px; font-weight:950;">${money(totalSales)}</div>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Total Expenses</div>
+            <div style="font-size:18px; font-weight:950;">${money(totalExpenses)}</div>
+            <div class="smallMuted" style="margin-top:6px;">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthlyMust)}</div>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Net Profit</div>
+            <div style="font-size:18px; font-weight:950;">${money(netProfit)}</div>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Bank Saving (separate)</div>
+            <div style="font-size:18px; font-weight:950;">${money(totalBank)}</div>
+          </div>
+        </div>
+
+        <br/>
+
+        <div style="display:grid; grid-template-columns: 1fr; gap: 12px;">
+          <div class="card" style="padding:12px;">
+            <div style="font-weight:900; margin-bottom:8px;">Daily Sales vs Daily Expenses</div>
+            <canvas id="chartLine" height="140"></canvas>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div style="font-weight:900; margin-bottom:8px;">Expense Breakdown</div>
+            <canvas id="chartPie" height="160"></canvas>
+          </div>
+        </div>
+      `;
+
+      const labels = dailyRows.map(x=>x.date);
+      const salesData = dailyRows.map(x=>x.business);
+      const expData = dailyRows.map(x=>x.exp);
+
+      if (chartLine) chartLine.destroy();
+      if (chartPie) chartPie.destroy();
+
+      chartLine = new Chart(document.getElementById("chartLine"), {
+        type: "line",
+        data: { labels, datasets: [
+          { label:"Sales", data: salesData },
+          { label:"Daily Expenses", data: expData }
+        ]},
+        options: { responsive:true, plugins:{ legend:{ display:true } } }
+      });
+
+      chartPie = new Chart(document.getElementById("chartPie"), {
+        type: "doughnut",
+        data: { labels:["Salary","Rent","Water","Electric","Other"], datasets:[{
+          data:[byType.salary,byType.rent,byType.water,byType.electric,byType.other]
+        }]},
+        options: { responsive:true, plugins:{ legend:{ display:true } } }
+      });
+    };
+  </script>
+</body>
+</html>
