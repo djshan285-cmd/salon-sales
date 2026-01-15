@@ -26,7 +26,6 @@
 
     <div class="grid">
 
-      <!-- Daily Sales -->
       <section class="card">
         <div class="sectionTitle">
           <h2>Daily Sales</h2>
@@ -57,7 +56,6 @@
         </div>
       </section>
 
-      <!-- Monthly Payments -->
       <section class="card">
         <div class="sectionTitle">
           <h2>Monthly Payments</h2>
@@ -183,8 +181,8 @@
     document.getElementById("me_submit").onclick = async () => {
       meMsg.className="msg"; meMsg.textContent="";
 
-      const monthKey = document.getElementById("me_month").value; // YYYY-MM
-      const type = document.getElementById("me_type").value;      // salary/rent/water/electric
+      const monthKey = document.getElementById("me_month").value;
+      const type = document.getElementById("me_type").value;
       const workerName = document.getElementById("me_worker").value.trim();
       const paidDate = document.getElementById("me_paidDate").value;
       const amount = Number(document.getElementById("me_amount").value || 0);
