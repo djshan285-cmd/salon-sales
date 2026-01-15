@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Deruja Beauty Hub and Lounge - Reports</title>
 
-  <!-- IMPORTANT: premium theme -->
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 
 <body>
   <div class="wrap">
 
-    <!-- Premium top bar -->
     <div class="card topbar noPrint">
       <div class="brand">
         <img src="assets/logo.png" alt="Logo">
@@ -31,7 +30,6 @@
 
     <div class="grid">
 
-      <!-- Filters -->
       <section class="card noPrint">
         <div class="sectionTitle">
           <h2>Report Selection</h2>
@@ -51,7 +49,7 @@
           <label>Monthly type</label>
           <select id="monthType">
             <option value="salary">Salary (by workers)</option>
-            <option value="rent">Paid rental</option>
+            <option value="rent">Paid rent</option>
             <option value="water">Water bills</option>
             <option value="electric">Electric bills</option>
           </select>
@@ -63,12 +61,14 @@
           <div class="row">
             <button class="btn btnPrimary" id="openMonthly">Open monthly must</button>
           </div>
+          <div class="row">
+            <button class="btn btnPrimary" id="openFull">Open full summary report</button>
+          </div>
 
           <div class="msg" id="msg"></div>
         </div>
       </section>
 
-      <!-- Output -->
       <section class="card" id="reportArea">
         <div class="sectionTitle">
           <h2>Report Output</h2>
@@ -76,8 +76,6 @@
         </div>
 
         <div class="pad">
-
-          <!-- PRINT HEADER (shows only when printing) -->
           <div class="printHeader" id="printHeader">
             <div class="printHeaderRow">
               <img src="assets/logo.png" alt="Logo">
@@ -92,9 +90,7 @@
             </div>
           </div>
 
-          <!-- report output -->
           <div class="reportBox" id="output">Select a report and click Open.</div>
-
         </div>
       </section>
 
@@ -136,13 +132,12 @@
     const printTitle = document.getElementById("printReportTitle");
 
     const money = (n) =>
-  new Intl.NumberFormat("en-LK", {
-    style: "currency",
-    currency: "LKR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(Number(n || 0));
-
+      new Intl.NumberFormat("en-LK", {
+        style: "currency",
+        currency: "LKR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(Number(n || 0));
 
     function getRange() {
       const from = document.getElementById("fromDate").value;
@@ -255,7 +250,12 @@
       const type = document.getElementById("monthType").value;
       if (!monthKey) { msg.className="msg msgErr"; msg.textContent = "Select month."; return; }
 
-      const typeTitle = (type === "salary") ? "Monthly Salary Report (By workers)" : `Monthly Must Report (${type.toUpperCase()})`;
+      const typeTitle =
+        (type === "salary") ? "Monthly Salary Report (By workers)" :
+        (type === "rent") ? "Monthly Rent Report" :
+        (type === "water") ? "Monthly Water Bill Report" :
+        "Monthly Electric Bill Report";
+
       setPrintTitle(typeTitle, `Month: ${monthKey}`);
 
       const qMonthly = query(
@@ -287,7 +287,12 @@
           <div class="smallMuted">Month: ${monthKey}</div>
           <br/>
           <table>
-            <thead><tr><th>Worker</th><th>Total salary paid</th></tr></thead>
+            <thead>
+              <tr>
+                <th style="width:70%;">Worker</th>
+                <th style="width:30%; text-align:right;">Total salary paid</th>
+              </tr>
+            </thead>
             <tbody>
               ${workers.map(([w,amt]) => `<tr><td>${w}</td><td>${money(amt)}</td></tr>`).join("")}
             </tbody>
@@ -311,6 +316,181 @@
           <div style="font-weight:950;">Total paid: ${money(total)}</div>
         `;
       }
+    };
+
+    // ---------- FULL SUMMARY (ALL IN ONE + CHARTS) ----------
+    function monthKeysBetween(from, to){
+      const out = [];
+      const d1 = new Date(from + "T00:00:00");
+      const d2 = new Date(to + "T00:00:00");
+      const d = new Date(d1.getFullYear(), d1.getMonth(), 1);
+      const end = new Date(d2.getFullYear(), d2.getMonth(), 1);
+      while (d <= end){
+        out.push(d.toISOString().slice(0,7));
+        d.setMonth(d.getMonth() + 1);
+      }
+      return out;
+    }
+
+    let chartLine = null;
+    let chartPie = null;
+
+    document.getElementById("openFull").onclick = async () => {
+      msg.className="msg"; msg.textContent="";
+
+      const r = getRange();
+      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
+
+      setPrintTitle("Full Summary Report (All-in-One)", `Range: ${r.from} to ${r.to}`);
+
+      // Daily range
+      const qDaily = query(
+        collection(db, "dailySales"),
+        where("date", ">=", r.from),
+        where("date", "<=", r.to)
+      );
+      const snapDaily = await getDocs(qDaily);
+
+      let totalSales = 0, totalDailyExp = 0, totalBank = 0;
+      const dailyRows = [];
+      snapDaily.forEach(d => {
+        const x = d.data();
+        const business = Number(x.businessTotal || 0);
+        const exp = Number(x.sameDayExpenses || 0);
+        const bank = Number(x.bankSaving || 0);
+        totalSales += business;
+        totalDailyExp += exp;
+        totalBank += bank;
+        dailyRows.push({ date:x.date, business, exp, bank });
+      });
+      dailyRows.sort((a,b)=>a.date.localeCompare(b.date));
+
+      // Monthly must for months in range
+      const months = monthKeysBetween(r.from, r.to);
+      const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
+      let totalMonthlyMust = 0;
+
+      for (const mk of months){
+        const qMust = query(collection(db,"monthlyExpenses"), where("monthKey","==", mk));
+        const snapMust = await getDocs(qMust);
+        snapMust.forEach(doc => {
+          const x = doc.data();
+          const amt = Number(x.amount || 0);
+          totalMonthlyMust += amt;
+
+          const t = (x.type || "other");
+          if (byType[t] === undefined) byType.other += amt;
+          else byType[t] += amt;
+        });
+      }
+
+      const totalExpenses = totalDailyExp + totalMonthlyMust;
+      const netProfit = totalSales - totalExpenses;
+
+      output.innerHTML = `
+        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Full Summary Report</div>
+        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
+        <br/>
+
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Total Sales</div>
+            <div style="font-size:18px; font-weight:950;">${money(totalSales)}</div>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Total Expenses</div>
+            <div style="font-size:18px; font-weight:950;">${money(totalExpenses)}</div>
+            <div class="smallMuted" style="margin-top:6px;">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthlyMust)}</div>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Net Profit</div>
+            <div style="font-size:18px; font-weight:950;">${money(netProfit)}</div>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div class="smallMuted">Bank Saving (separate)</div>
+            <div style="font-size:18px; font-weight:950;">${money(totalBank)}</div>
+          </div>
+        </div>
+
+        <br/>
+
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 12px;">
+          <div class="card" style="padding:12px;">
+            <div style="font-weight:900; margin-bottom:8px;">Daily Sales vs Daily Expenses</div>
+            <canvas id="chartLine" height="120"></canvas>
+          </div>
+
+          <div class="card" style="padding:12px;">
+            <div style="font-weight:900; margin-bottom:8px;">Expense Breakdown</div>
+            <canvas id="chartPie" height="160"></canvas>
+            <div class="smallMuted" style="margin-top:8px;">
+              Salary ${money(byType.salary)} • Rent ${money(byType.rent)} • Water ${money(byType.water)} • Electric ${money(byType.electric)} • Other ${money(byType.other)}
+            </div>
+          </div>
+        </div>
+
+        <br/>
+
+        <div class="card" style="padding:12px;">
+          <div style="font-weight:900; margin-bottom:8px;">Daily Detail</div>
+          <table>
+            <thead><tr><th>Date</th><th>Sales</th><th>Daily Expenses</th><th>Bank Saving</th></tr></thead>
+            <tbody>
+              ${dailyRows.map(x=>`
+                <tr>
+                  <td>${x.date}</td>
+                  <td>${money(x.business)}</td>
+                  <td>${money(x.exp)}</td>
+                  <td>${money(x.bank)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+
+        <br/>
+
+        <div class="card" style="padding:12px;">
+          <div style="font-weight:900; margin-bottom:8px;">Monthly Must Summary</div>
+          <table>
+            <thead><tr><th>Type</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>Salaries</td><td>${money(byType.salary)}</td></tr>
+              <tr><td>Rent</td><td>${money(byType.rent)}</td></tr>
+              <tr><td>Water</td><td>${money(byType.water)}</td></tr>
+              <tr><td>Electric</td><td>${money(byType.electric)}</td></tr>
+              <tr><td>Other</td><td>${money(byType.other)}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      const labels = dailyRows.map(x=>x.date);
+      const salesData = dailyRows.map(x=>x.business);
+      const expData = dailyRows.map(x=>x.exp);
+
+      if (chartLine) chartLine.destroy();
+      if (chartPie) chartPie.destroy();
+
+      chartLine = new Chart(document.getElementById("chartLine"), {
+        type: "line",
+        data: { labels, datasets: [
+          { label:"Sales", data: salesData },
+          { label:"Daily Expenses", data: expData }
+        ]},
+        options: { responsive:true, plugins:{ legend:{ display:true } } }
+      });
+
+      chartPie = new Chart(document.getElementById("chartPie"), {
+        type: "doughnut",
+        data: { labels:["Salary","Rent","Water","Electric","Other"], datasets:[{
+          data:[byType.salary,byType.rent,byType.water,byType.electric,byType.other]
+        }]},
+        options: { responsive:true, plugins:{ legend:{ display:true } } }
+      });
     };
   </script>
 </body>
