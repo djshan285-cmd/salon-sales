@@ -53,13 +53,13 @@
             <option value="water">Water bills</option>
             <option value="electric">Electric bills</option>
           </select>
-         <div class="btnGrid">
-           <button class="btn btnPrimary" id="openDaily">Open daily business</button>
-           <button class="btn btnGhost" id="openExpense">Open expenses</button>
 
-           <button class="btn btnPrimary" id="openMonthly">Open monthly must</button>
-           <button class="btn btnPrimary btnWide" id="openFull">Open full summary report</button>
-        </div>
+          <div class="btnGrid">
+            <button class="btn btnPrimary" id="openDaily">Open daily business</button>
+            <button class="btn btnGhost" id="openExpense">Open expenses</button>
+            <button class="btn btnPrimary" id="openMonthly">Open monthly must</button>
+            <button class="btn btnPrimary btnWide" id="openFull">Open full summary report</button>
+          </div>
 
           <div class="msg" id="msg"></div>
         </div>
@@ -150,11 +150,11 @@
 
     // Daily business report
     document.getElementById("openDaily").onclick = async () => {
-      msg.className = "msg";
-      msg.textContent = "";
+      msg.className="msg";
+      msg.textContent="";
 
       const r = getRange();
-      if (!r) { msg.className="msg msgErr"; msg.textContent = "Select valid From and To dates."; return; }
+      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
       setPrintTitle("Daily Business Report", `Range: ${r.from} to ${r.to}`);
 
@@ -196,11 +196,11 @@
 
     // Total expenses report
     document.getElementById("openExpense").onclick = async () => {
-      msg.className = "msg";
-      msg.textContent = "";
+      msg.className="msg";
+      msg.textContent="";
 
       const r = getRange();
-      if (!r) { msg.className="msg msgErr"; msg.textContent = "Select valid From and To dates."; return; }
+      if (!r) { msg.className="msg msgErr"; msg.textContent="Select valid From and To dates."; return; }
 
       setPrintTitle("Total Expenses Report (Daily)", `Range: ${r.from} to ${r.to}`);
 
@@ -239,12 +239,12 @@
 
     // Monthly must report
     document.getElementById("openMonthly").onclick = async () => {
-      msg.className = "msg";
-      msg.textContent = "";
+      msg.className="msg";
+      msg.textContent="";
 
       const monthKey = document.getElementById("monthKey").value;
       const type = document.getElementById("monthType").value;
-      if (!monthKey) { msg.className="msg msgErr"; msg.textContent = "Select month."; return; }
+      if (!monthKey) { msg.className="msg msgErr"; msg.textContent="Select month."; return; }
 
       const typeTitle =
         (type === "salary") ? "Monthly Salary Report (By workers)" :
@@ -339,7 +339,6 @@
 
       setPrintTitle("Full Summary Report (All-in-One)", `Range: ${r.from} to ${r.to}`);
 
-      // Daily range
       const qDaily = query(
         collection(db, "dailySales"),
         where("date", ">=", r.from),
@@ -361,7 +360,6 @@
       });
       dailyRows.sort((a,b)=>a.date.localeCompare(b.date));
 
-      // Monthly must for months in range
       const months = monthKeysBetween(r.from, r.to);
       const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
       let totalMonthlyMust = 0;
@@ -388,7 +386,7 @@
         <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
         <br/>
 
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
           <div class="card" style="padding:12px;">
             <div class="smallMuted">Total Sales</div>
             <div style="font-size:18px; font-weight:950;">${money(totalSales)}</div>
@@ -413,54 +411,16 @@
 
         <br/>
 
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 12px;">
+        <div style="display:grid; grid-template-columns: 1fr; gap: 12px;">
           <div class="card" style="padding:12px;">
             <div style="font-weight:900; margin-bottom:8px;">Daily Sales vs Daily Expenses</div>
-            <canvas id="chartLine" height="120"></canvas>
+            <canvas id="chartLine" height="140"></canvas>
           </div>
 
           <div class="card" style="padding:12px;">
             <div style="font-weight:900; margin-bottom:8px;">Expense Breakdown</div>
             <canvas id="chartPie" height="160"></canvas>
-            <div class="smallMuted" style="margin-top:8px;">
-              Salary ${money(byType.salary)} • Rent ${money(byType.rent)} • Water ${money(byType.water)} • Electric ${money(byType.electric)} • Other ${money(byType.other)}
-            </div>
           </div>
-        </div>
-
-        <br/>
-
-        <div class="card" style="padding:12px;">
-          <div style="font-weight:900; margin-bottom:8px;">Daily Detail</div>
-          <table>
-            <thead><tr><th>Date</th><th>Sales</th><th>Daily Expenses</th><th>Bank Saving</th></tr></thead>
-            <tbody>
-              ${dailyRows.map(x=>`
-                <tr>
-                  <td>${x.date}</td>
-                  <td>${money(x.business)}</td>
-                  <td>${money(x.exp)}</td>
-                  <td>${money(x.bank)}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-
-        <br/>
-
-        <div class="card" style="padding:12px;">
-          <div style="font-weight:900; margin-bottom:8px;">Monthly Must Summary</div>
-          <table>
-            <thead><tr><th>Type</th><th>Total</th></tr></thead>
-            <tbody>
-              <tr><td>Salaries</td><td>${money(byType.salary)}</td></tr>
-              <tr><td>Rent</td><td>${money(byType.rent)}</td></tr>
-              <tr><td>Water</td><td>${money(byType.water)}</td></tr>
-              <tr><td>Electric</td><td>${money(byType.electric)}</td></tr>
-              <tr><td>Other</td><td>${money(byType.other)}</td></tr>
-            </tbody>
-          </table>
         </div>
       `;
 
