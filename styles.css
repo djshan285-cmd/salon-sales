@@ -251,3 +251,29 @@ th:last-child, td:last-child{ text-align:right; white-space:nowrap; }
   th{ font-weight: 950 !important; }
   th:last-child, td:last-child{ text-align:right !important; }
 }
+/* Reports button layout */
+.btnGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.btnGrid .btn{
+  width: 100%;
+  height: 46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 0 14px;
+}
+
+.btnGrid .btnWide{
+  grid-column: 1 / -1; /* full width */
+}
+
+/* small screens */
+@media (max-width: 520px){
+  .btnGrid{ grid-template-columns: 1fr; }
+  .btnGrid .btnWide{ grid-column: auto; }
+}
