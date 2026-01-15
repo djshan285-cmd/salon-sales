@@ -135,7 +135,14 @@
     const output = document.getElementById("output");
     const printTitle = document.getElementById("printReportTitle");
 
-    const money = (n) => (Number(n||0)).toFixed(2);
+    const money = (n) =>
+  new Intl.NumberFormat("en-LK", {
+    style: "currency",
+    currency: "LKR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(Number(n || 0));
+
 
     function getRange() {
       const from = document.getElementById("fromDate").value;
