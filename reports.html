@@ -3,113 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Reports</title>
-  <style>
-    :root{
-      --bg1:#ff4fd8; --bg2:#ffb3e6;
-      --card: rgba(255,255,255,0.22);
-      --stroke: rgba(255,255,255,0.35);
-      --text:#1c1c1c;
-    }
-    body{
-      margin:0; min-height:100vh;
-      font-family: system-ui, Arial, sans-serif;
-      background: linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:var(--text);
-    }
-    header{
-      padding:18px 16px;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px;
-    }
-    header .left{ display:flex; align-items:center; gap:10px; }
-    header img{ width:42px; height:42px; object-fit:contain; border-radius:10px; background: rgba(255,255,255,0.35); padding:6px; }
-    button{
-      border:0; border-radius:999px;
-      padding:10px 14px;
-      font-weight:800;
-      cursor:pointer;
-      background: rgba(255,255,255,0.65);
-    }
-    main{ padding:0 16px 24px; display:grid; gap:14px; }
-    .card{
-      padding:16px;
-      border-radius:18px;
-      background:var(--card);
-      border:1px solid var(--stroke);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-    }
-    .card h2{ margin:0 0 12px; font-size:18px; }
-    label{ display:block; margin:10px 0 6px; font-weight:700; }
-    input, select{
-      width:100%;
-      padding:11px 12px;
-      border-radius:12px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,0.35);
-      outline:none;
-      box-sizing:border-box;
-    }
-    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    @media (max-width:900px){ .grid{ grid-template-columns:1fr; } }
-    .reportBox{
-      background: rgba(255,255,255,0.35);
-      border: 1px solid var(--stroke);
-      border-radius: 14px;
-      padding: 12px;
-      overflow:auto;
-    }
-    table{ width:100%; border-collapse: collapse; }
-    th,td{ padding:8px; border-bottom:1px solid rgba(0,0,0,0.12); text-align:left; }
-    .big{ font-size:18px; font-weight:900; }
-    .muted{ font-weight:700; opacity:0.85; }
-
-    @media print{
-      body{ background:#fff !important; }
-      header, .noPrint{ display:none !important; }
-      .card{ box-shadow:none !important; background:#fff !important; border:0 !important; }
-      .reportBox{ background:#fff !important; border:0 !important; }
-    }
-  </style>
+  <title>Deruja Beauty Hub and Lounge - Reports</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="left">
-      <img src="assets/logo.png" alt="Logo">
-      <div>
-        <div class="big">Reports</div>
-        <div class="muted">Daily business + expenses + monthly salary/rent/bills</div>
+  <div class="wrap">
+    <div class="card topbar noPrint">
+      <div class="brand">
+        <img src="assets/logo.png" alt="Logo">
+        <div class="title">
+          <strong>Deruja Beauty Hub and Lounge</strong>
+          <span>Reports • Print ready</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btnGhost" id="backBtn">← Back</button>
+        <button class="btn btnPrimary" id="printBtn">🖨 Print</button>
+        <button class="btn btnDanger" id="logoutBtn">⎋ Logout</button>
       </div>
     </div>
-    <div class="noPrint" style="display:flex; gap:8px;">
-      <button id="backBtn">Back</button>
-      <button id="printBtn">Print</button>
-      <button id="logoutBtn">Logout</button>
-    </div>
-  </header>
 
-  <main>
-    <section class="card noPrint">
-      <h2>Report selection</h2>
-
-      <div class="grid">
-        <div>
+    <div class="grid">
+      <!-- Filters -->
+      <section class="card noPrint">
+        <div class="sectionTitle">
+          <h2>Report Selection</h2>
+          <p>Select date range or month and click Open</p>
+        </div>
+        <div class="pad">
           <label>Daily / Range (From)</label>
           <input id="fromDate" type="date">
-        </div>
-        <div>
+
           <label>Daily / Range (To)</label>
           <input id="toDate" type="date">
-        </div>
-      </div>
 
-      <div class="grid">
-        <div>
           <label>Monthly report (month)</label>
           <input id="monthKey" type="month">
-        </div>
-        <div>
+
           <label>Monthly type</label>
           <select id="monthType">
             <option value="salary">Salary (by workers)</option>
@@ -117,23 +47,46 @@
             <option value="water">Water bills</option>
             <option value="electric">Electric bills</option>
           </select>
+
+          <div class="row">
+            <button class="btn btnPrimary" id="openDaily">Open daily business</button>
+            <button class="btn btnGhost" id="openExpense">Open expenses</button>
+          </div>
+          <div class="row">
+            <button class="btn btnPrimary" id="openMonthly">Open monthly must</button>
+          </div>
+
+          <div class="msg" id="msg"></div>
         </div>
-      </div>
+      </section>
 
-      <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-        <button id="openDaily">Open daily business report</button>
-        <button id="openExpense">Open total expenses report</button>
-        <button id="openMonthly">Open monthly must report</button>
-      </div>
+      <!-- Output -->
+      <section class="card" id="reportArea">
+        <div class="sectionTitle">
+          <h2>Report Output</h2>
+          <p class="smallMuted">Tip: Use Print button for PDF / Paper</p>
+        </div>
+        <div class="pad">
+          <!-- PRINT HEADER (shows only when printing) -->
+          <div class="printHeader" id="printHeader">
+            <div class="printHeaderRow">
+              <img src="assets/logo.png" alt="Logo">
+              <div>
+                <h1>Deruja Beauty Hub and Lounge</h1>
+                <div class="meta">
+                  No39/A new rosita bazar kotagala<br/>
+                  Mobile No: 051-224 4456 / 076-669 3456<br/>
+                  <span id="printReportTitle"></span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="muted" id="msg" style="margin-top:10px;"></div>
-    </section>
-
-    <section class="card" id="reportArea">
-      <h2>Report Output</h2>
-      <div class="reportBox" id="output">Select a report and click Open.</div>
-    </section>
-  </main>
+          <div class="reportBox" id="output">Select a report and click Open.</div>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
@@ -158,12 +111,16 @@
       if (!user) window.location.href = "index.html";
     });
 
-    const msg = document.getElementById("msg");
-    const output = document.getElementById("output");
-
     document.getElementById("backBtn").onclick = () => window.location.href = "app.html";
     document.getElementById("printBtn").onclick = () => window.print();
-    document.getElementById("logoutBtn").onclick = async () => { await signOut(auth); window.location.href="index.html"; };
+    document.getElementById("logoutBtn").onclick = async () => {
+      await signOut(auth);
+      window.location.href="index.html";
+    };
+
+    const msg = document.getElementById("msg");
+    const output = document.getElementById("output");
+    const printTitle = document.getElementById("printReportTitle");
 
     const money = (n) => (Number(n||0)).toFixed(2);
 
@@ -175,11 +132,20 @@
       return { from, to };
     }
 
+    function setPrintTitle(title, sub){
+      const now = new Date();
+      const dt = now.toLocaleString();
+      printTitle.textContent = `${title} ${sub ? " - " + sub : ""} | Printed: ${dt}`;
+    }
+
     // Daily business report
     document.getElementById("openDaily").onclick = async () => {
+      msg.className = "msg";
       msg.textContent = "";
       const r = getRange();
-      if (!r) { msg.textContent = "Select valid From and To dates."; return; }
+      if (!r) { msg.className="msg msgErr"; msg.textContent = "Select valid From and To dates."; return; }
+
+      setPrintTitle("Daily Business Report", `Range: ${r.from} to ${r.to}`);
 
       const qy = query(
         collection(db, "dailySales"),
@@ -196,14 +162,18 @@
         const x = d.data();
         totalBusiness += Number(x.businessTotal || 0);
         totalBank += Number(x.bankSaving || 0);
-        rows.push({ date: x.date, businessTotal: x.businessTotal || 0, bankSaving: x.bankSaving || 0 });
+        rows.push({
+          date: x.date,
+          businessTotal: x.businessTotal || 0,
+          bankSaving: x.bankSaving || 0
+        });
       });
 
       rows.sort((a,b)=> a.date.localeCompare(b.date));
 
       output.innerHTML = `
-        <div class="big">Daily Business Report</div>
-        <div class="muted">Range: ${r.from} to ${r.to}</div>
+        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Daily Business Report</div>
+        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
         <br/>
         <table>
           <thead><tr><th>Date</th><th>Business</th><th>Bank saving</th></tr></thead>
@@ -212,16 +182,19 @@
           </tbody>
         </table>
         <br/>
-        <div class="big">Total business: ${money(totalBusiness)}</div>
-        <div class="big">Total bank saving: ${money(totalBank)}</div>
+        <div style="font-weight:950;">Total business: ${money(totalBusiness)}</div>
+        <div style="font-weight:950;">Total bank saving: ${money(totalBank)}</div>
       `;
     };
 
-    // Total expenses report (daily same-day expenses)
+    // Total expenses report
     document.getElementById("openExpense").onclick = async () => {
+      msg.className = "msg";
       msg.textContent = "";
       const r = getRange();
-      if (!r) { msg.textContent = "Select valid From and To dates."; return; }
+      if (!r) { msg.className="msg msgErr"; msg.textContent = "Select valid From and To dates."; return; }
+
+      setPrintTitle("Total Expenses Report (Daily)", `Range: ${r.from} to ${r.to}`);
 
       const qDaily = query(
         collection(db, "dailySales"),
@@ -232,16 +205,18 @@
       const snap = await getDocs(qDaily);
       let totalDailyExpenses = 0;
       const rows = [];
+
       snap.forEach(d => {
         const x = d.data();
         totalDailyExpenses += Number(x.sameDayExpenses || 0);
         rows.push({ date: x.date, sameDayExpenses: x.sameDayExpenses || 0 });
       });
+
       rows.sort((a,b)=> a.date.localeCompare(b.date));
 
       output.innerHTML = `
-        <div class="big">Total Expenses Report (Daily)</div>
-        <div class="muted">Range: ${r.from} to ${r.to}</div>
+        <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Total Expenses Report (Daily)</div>
+        <div class="smallMuted">Range: ${r.from} to ${r.to}</div>
         <br/>
         <table>
           <thead><tr><th>Date</th><th>Same-day Expenses</th></tr></thead>
@@ -250,18 +225,20 @@
           </tbody>
         </table>
         <br/>
-        <div class="big">Total daily expenses: ${money(totalDailyExpenses)}</div>
-        <div class="muted">For Monthly must (salary/rent/bills), use “Open monthly must report”.</div>
+        <div style="font-weight:950;">Total daily expenses: ${money(totalDailyExpenses)}</div>
       `;
     };
 
     // Monthly must report
     document.getElementById("openMonthly").onclick = async () => {
+      msg.className = "msg";
       msg.textContent = "";
-      const monthKey = document.getElementById("monthKey").value; // YYYY-MM
+      const monthKey = document.getElementById("monthKey").value;
       const type = document.getElementById("monthType").value;
+      if (!monthKey) { msg.className="msg msgErr"; msg.textContent = "Select month."; return; }
 
-      if (!monthKey) { msg.textContent = "Select month."; return; }
+      const typeTitle = (type === "salary") ? "Monthly Salary Report (By workers)" : `Monthly Must Report (${type.toUpperCase()})`;
+      setPrintTitle(typeTitle, `Month: ${monthKey}`);
 
       const qMonthly = query(
         collection(db, "monthlyExpenses"),
@@ -270,7 +247,6 @@
       );
 
       const snap = await getDocs(qMonthly);
-
       let total = 0;
       const items = [];
       snap.forEach(d => {
@@ -289,8 +265,8 @@
         const workers = Object.entries(byWorker).sort((a,b)=> b[1]-a[1]);
 
         output.innerHTML = `
-          <div class="big">Monthly Salary Report (By workers)</div>
-          <div class="muted">Month: ${monthKey}</div>
+          <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Monthly Salary Report (By workers)</div>
+          <div class="smallMuted">Month: ${monthKey}</div>
           <br/>
           <table>
             <thead><tr><th>Worker</th><th>Total salary paid</th></tr></thead>
@@ -299,12 +275,12 @@
             </tbody>
           </table>
           <br/>
-          <div class="big">Total salaries paid: ${money(total)}</div>
+          <div style="font-weight:950;">Total salaries paid: ${money(total)}</div>
         `;
       } else {
         output.innerHTML = `
-          <div class="big">Monthly Must Report</div>
-          <div class="muted">Type: ${type.toUpperCase()} | Month: ${monthKey}</div>
+          <div style="font-weight:950; font-size:15px; margin-bottom:6px;">Monthly Must Report</div>
+          <div class="smallMuted">Type: ${type.toUpperCase()} | Month: ${monthKey}</div>
           <br/>
           <table>
             <thead><tr><th>Paid Date</th><th>Amount</th><th>Note</th></tr></thead>
@@ -314,7 +290,7 @@
             </tbody>
           </table>
           <br/>
-          <div class="big">Total paid: ${money(total)}</div>
+          <div style="font-weight:950;">Total paid: ${money(total)}</div>
         `;
       }
     };
