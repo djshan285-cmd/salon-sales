@@ -1,108 +1,146 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Deruja Beauty Hub and Lounge - Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Deruja Beauty Hub and Lounge — Dashboard</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="wrap">
+  <div class="bg-orbs"></div>
 
-    <div class="card topbar noPrint">
-      <div class="brand">
-        <img src="assets/logo.png" alt="Logo">
-        <div class="title">
-          <strong>Deruja Beauty Hub and Lounge</strong>
-          <span>Daily Sales • Expenses • Monthly Payments</span>
-        </div>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <!-- 72px logo requested -->
+        <img src="assets/logo.png" alt="Logo" />
       </div>
-
-      <div class="actions">
-        <button class="btn btnGhost" id="reportsBtn">📊 Reports</button>
-        <button class="btn btnDanger" id="logoutBtn">⎋ Logout</button>
+      <div class="topbar-text">
+        <div class="topbar-title">Deruja Beauty Hub and Lounge</div>
+        <div class="topbar-sub">Daily Sales • Expenses • Monthly Payments</div>
       </div>
     </div>
 
-    <div class="grid">
+    <div class="topbar-actions">
+      <a class="btn btn-soft" href="reports.html" title="Reports">
+        📊 <span class="hide-sm">Reports</span>
+      </a>
+      <button id="logoutBtn" class="btn btn-danger" type="button">
+        ⎋ <span class="hide-sm">Logout</span>
+      </button>
+    </div>
+  </header>
 
-      <section class="card">
-        <div class="sectionTitle">
+  <main class="page">
+    <section class="grid-2">
+      <!-- Daily Sales -->
+      <div class="glass-card card">
+        <div class="card-head">
           <h2>Daily Sales</h2>
-          <p>Enter daily income, same-day expenses, and bank saving</p>
+          <p>Enter daily totals + same-day expenses + bank saving</p>
         </div>
-        <div class="pad">
-          <label>Date</label>
-          <input id="ds_date" type="date">
 
-          <label>Total business</label>
-          <input id="ds_business" type="number" step="0.01" placeholder="0.00">
-
-          <label>Same-day expenses</label>
-          <input id="ds_expenses" type="number" step="0.01" placeholder="0.00">
-
-          <label>Bank saving (same day)</label>
-          <input id="ds_bank" type="number" step="0.01" placeholder="0.00">
-
-          <label>Note</label>
-          <textarea id="ds_note" placeholder="Optional"></textarea>
-
-          <div class="row">
-            <button class="btn btnPrimary" id="ds_submit" style="flex:1;">Submit</button>
-            <button class="btn btnGhost" id="ds_new" style="flex:1;">New</button>
+        <form id="dailyForm" class="form">
+          <div class="grid-2-sm">
+            <label class="field">
+              <span>Date</span>
+              <input id="dDate" type="date" required />
+            </label>
+            <label class="field">
+              <span>Total sales</span>
+              <input id="dBusiness" type="number" inputmode="decimal" step="0.01" placeholder="0.00" required />
+            </label>
           </div>
 
-          <div class="msg" id="ds_msg"></div>
-        </div>
-      </section>
+          <label class="field">
+            <span>Same-day expenses</span>
+            <input id="dExpense" type="number" inputmode="decimal" step="0.01" placeholder="0.00" />
+          </label>
 
-      <section class="card">
-        <div class="sectionTitle">
+          <label class="field">
+            <span>Bank saving (same day)</span>
+            <input id="dBank" type="number" inputmode="decimal" step="0.01" placeholder="0.00" />
+          </label>
+
+          <label class="field">
+            <span>Note</span>
+            <textarea id="dNote" rows="3" placeholder="Optional"></textarea>
+          </label>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit">Submit</button>
+            <button id="dailyNew" class="btn btn-soft" type="button">New</button>
+          </div>
+
+          <p id="dailyMsg" class="msg"></p>
+        </form>
+      </div>
+
+      <!-- Monthly Must -->
+      <div class="glass-card card">
+        <div class="card-head">
           <h2>Monthly Payments</h2>
-          <p>Salaries • Rent • Water • Electricity</p>
+          <p>Salaries / Rent / Water / Electric bills</p>
         </div>
 
-        <div class="pad">
-          <label>Month</label>
-          <input id="me_month" type="month">
+        <form id="monthlyForm" class="form">
+          <div class="grid-2-sm">
+            <label class="field">
+              <span>Month</span>
+              <input id="mMonth" type="month" required />
+            </label>
 
-          <label>Type</label>
-          <select id="me_type">
-            <option value="salary">Salaries</option>
-            <option value="rent">Rent</option>
-            <option value="water">Water</option>
-            <option value="electric">Electric</option>
-          </select>
-
-          <label>Worker Name (only for Salaries)</label>
-          <input id="me_worker" type="text" placeholder="Worker name">
-
-          <label>Paid Date</label>
-          <input id="me_paidDate" type="date">
-
-          <label>Amount</label>
-          <input id="me_amount" type="number" step="0.01" placeholder="0.00">
-
-          <label>Note</label>
-          <textarea id="me_note" placeholder="Optional"></textarea>
-
-          <div class="row">
-            <button class="btn btnPrimary" id="me_submit" style="flex:1;">Submit</button>
-            <button class="btn btnGhost" id="me_new" style="flex:1;">New</button>
+            <label class="field">
+              <span>Type</span>
+              <select id="mType" required>
+                <option value="salary">Salaries</option>
+                <option value="rent">Rent</option>
+                <option value="water">Water</option>
+                <option value="electric">Electric</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
           </div>
 
-          <div class="msg" id="me_msg"></div>
-        </div>
-      </section>
+          <label class="field" id="workerWrap">
+            <span>Worker name (only for Salaries)</span>
+            <input id="mWorker" type="text" placeholder="Worker name" />
+          </label>
 
-    </div>
-  </div>
+          <div class="grid-2-sm">
+            <label class="field">
+              <span>Paid date</span>
+              <input id="mPaidDate" type="date" required />
+            </label>
+            <label class="field">
+              <span>Amount</span>
+              <input id="mAmount" type="number" inputmode="decimal" step="0.01" placeholder="0.00" required />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Note</span>
+            <textarea id="mNote" rows="3" placeholder="Optional"></textarea>
+          </label>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit">Submit</button>
+            <button id="monthlyNew" class="btn btn-soft" type="button">New</button>
+          </div>
+
+          <p id="monthlyMsg" class="msg"></p>
+        </form>
+      </div>
+    </section>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+    // ✅ YOUR CONFIG (kept exactly)
     const firebaseConfig = {
       apiKey: "AIzaSyB_pQt0C5X3R9tmVl8SRGT-DQ3eoNvdOEw",
       authDomain: "salonsales-32a19.firebaseapp.com",
@@ -116,101 +154,123 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Collections (do not change unless your DB uses different names)
+    const COL_DAILY = "dailySales";
+    const COL_MONTHLY = "monthlyExpenses";
+
+    const $ = (id) => document.getElementById(id);
+
+    let currentUser = null;
+
     onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = "index.html";
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+      currentUser = user;
     });
 
-    document.getElementById("reportsBtn").onclick = () => window.location.href = "reports.html";
-    document.getElementById("logoutBtn").onclick = async () => {
+    $("logoutBtn").addEventListener("click", async () => {
       await signOut(auth);
-      window.location.href="index.html";
-    };
+      window.location.href = "index.html";
+    });
 
-    const dsMsg = document.getElementById("ds_msg");
-    const meMsg = document.getElementById("me_msg");
+    // Show worker field only if salary
+    const mType = $("mType");
+    const workerWrap = $("workerWrap");
+    const mWorker = $("mWorker");
 
-    const clearDaily = () => {
-      document.getElementById("ds_date").value = "";
-      document.getElementById("ds_business").value = "";
-      document.getElementById("ds_expenses").value = "";
-      document.getElementById("ds_bank").value = "";
-      document.getElementById("ds_note").value = "";
-    };
+    function refreshWorkerVisibility() {
+      const isSalary = mType.value === "salary";
+      workerWrap.style.display = isSalary ? "block" : "none";
+      if (!isSalary) mWorker.value = "";
+    }
+    mType.addEventListener("change", refreshWorkerVisibility);
+    refreshWorkerVisibility();
 
-    const clearMonthly = () => {
-      document.getElementById("me_month").value = "";
-      document.getElementById("me_type").value = "salary";
-      document.getElementById("me_worker").value = "";
-      document.getElementById("me_paidDate").value = "";
-      document.getElementById("me_amount").value = "";
-      document.getElementById("me_note").value = "";
-    };
+    // Daily Form
+    $("dailyNew").addEventListener("click", () => {
+      $("dDate").value = "";
+      $("dBusiness").value = "";
+      $("dExpense").value = "";
+      $("dBank").value = "";
+      $("dNote").value = "";
+      $("dailyMsg").textContent = "";
+      $("dailyMsg").className = "msg";
+    });
 
-    document.getElementById("ds_new").onclick = clearDaily;
-    document.getElementById("me_new").onclick = clearMonthly;
+    $("dailyForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = $("dailyMsg");
+      msg.className = "msg";
+      msg.textContent = "";
 
-    document.getElementById("ds_submit").onclick = async () => {
-      dsMsg.className="msg"; dsMsg.textContent="";
-
-      const date = document.getElementById("ds_date").value;
-      const businessTotal = Number(document.getElementById("ds_business").value || 0);
-      const sameDayExpenses = Number(document.getElementById("ds_expenses").value || 0);
-      const bankSaving = Number(document.getElementById("ds_bank").value || 0);
-      const note = document.getElementById("ds_note").value.trim();
-
-      if(!date){ dsMsg.className="msg msgErr"; dsMsg.textContent="Please select date."; return; }
-
-      try{
-        await addDoc(collection(db,"dailySales"),{
-          date,
-          businessTotal,
-          sameDayExpenses,
-          bankSaving,
-          note,
+      try {
+        const payload = {
+          uid: currentUser.uid,
+          date: $("dDate").value, // YYYY-MM-DD
+          business: Number($("dBusiness").value || 0),
+          sameDayExpenses: Number($("dExpense").value || 0),
+          bankSaving: Number($("dBank").value || 0),
+          note: $("dNote").value.trim(),
           createdAt: serverTimestamp()
-        });
-        dsMsg.className="msg msgOk";
-        dsMsg.textContent="Saved.";
-        clearDaily();
-      }catch(e){
-        dsMsg.className="msg msgErr";
-        dsMsg.textContent=e.message;
+        };
+
+        await addDoc(collection(db, COL_DAILY), payload);
+
+        msg.className = "msg msg-ok";
+        msg.textContent = "Saved ✔";
+      } catch (err) {
+        msg.className = "msg msg-error";
+        msg.textContent = err?.message || "Save failed";
       }
-    };
+    });
 
-    document.getElementById("me_submit").onclick = async () => {
-      meMsg.className="msg"; meMsg.textContent="";
+    // Monthly Form
+    $("monthlyNew").addEventListener("click", () => {
+      $("mMonth").value = "";
+      $("mType").value = "salary";
+      $("mWorker").value = "";
+      $("mPaidDate").value = "";
+      $("mAmount").value = "";
+      $("mNote").value = "";
+      refreshWorkerVisibility();
 
-      const monthKey = document.getElementById("me_month").value;
-      const type = document.getElementById("me_type").value;
-      const workerName = document.getElementById("me_worker").value.trim();
-      const paidDate = document.getElementById("me_paidDate").value;
-      const amount = Number(document.getElementById("me_amount").value || 0);
-      const note = document.getElementById("me_note").value.trim();
+      $("monthlyMsg").textContent = "";
+      $("monthlyMsg").className = "msg";
+    });
 
-      if(!monthKey){ meMsg.className="msg msgErr"; meMsg.textContent="Please select month."; return; }
-      if(!paidDate){ meMsg.className="msg msgErr"; meMsg.textContent="Please select paid date."; return; }
-      if(amount <= 0){ meMsg.className="msg msgErr"; meMsg.textContent="Amount must be greater than 0."; return; }
-      if(type==="salary" && !workerName){ meMsg.className="msg msgErr"; meMsg.textContent="Worker name required for salary."; return; }
+    $("monthlyForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = $("monthlyMsg");
+      msg.className = "msg";
+      msg.textContent = "";
 
-      try{
-        await addDoc(collection(db,"monthlyExpenses"),{
+      try {
+        const monthKey = $("mMonth").value; // YYYY-MM
+        const type = $("mType").value;
+        const workerName = type === "salary" ? $("mWorker").value.trim() : "";
+
+        const payload = {
+          uid: currentUser.uid,
           monthKey,
           type,
-          workerName: (type==="salary" ? workerName : ""),
-          paidDate,
-          amount,
-          note,
+          workerName,
+          paidDate: $("mPaidDate").value, // YYYY-MM-DD
+          amount: Number($("mAmount").value || 0),
+          note: $("mNote").value.trim(),
           createdAt: serverTimestamp()
-        });
-        meMsg.className="msg msgOk";
-        meMsg.textContent="Saved.";
-        clearMonthly();
-      }catch(e){
-        meMsg.className="msg msgErr";
-        meMsg.textContent=e.message;
+        };
+
+        await addDoc(collection(db, COL_MONTHLY), payload);
+
+        msg.className = "msg msg-ok";
+        msg.textContent = "Saved ✔";
+      } catch (err) {
+        msg.className = "msg msg-error";
+        msg.textContent = err?.message || "Save failed";
       }
-    };
+    });
   </script>
 </body>
 </html>
