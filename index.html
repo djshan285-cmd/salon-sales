@@ -1,40 +1,57 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Deruja Beauty Hub and Lounge - Login</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Deruja Beauty Hub and Lounge — Login</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="wrap" style="max-width:720px;">
-    <div class="card" style="margin-top:80px;">
-      <div class="pad" style="text-align:center;">
-        <img src="assets/logo.png" alt="Logo" style="width:92px;height:92px;border-radius:22px;object-fit:contain;background:rgba(255,255,255,0.08);padding:12px;border:1px solid rgba(255,255,255,0.14);box-shadow:0 18px 55px rgba(0,0,0,0.38);">
-        <h1 style="margin:14px 0 6px; font-size:20px; font-weight:950;">Deruja Beauty Hub and Lounge</h1>
-        <div class="smallMuted">Secure login • Sales & Expenses</div>
+  <div class="bg-orbs"></div>
 
-        <div style="max-width:520px; margin: 18px auto 0; text-align:left;">
-          <label>Email</label>
-          <input id="email" type="email" placeholder="you@email.com"/>
-
-          <label>Password</label>
-          <input id="password" type="password" placeholder="••••••••"/>
-
-          <div class="row">
-            <button class="btn btnPrimary" id="loginBtn" style="flex:1;">Login</button>
-          </div>
-
-          <div class="msg" id="msg"></div>
+  <main class="auth-wrap">
+    <section class="glass-card auth-card">
+      <div class="brand-block">
+        <div class="brand-logo">
+          <img src="assets/logo.png" alt="Deruja logo" />
+        </div>
+        <div class="brand-title">Deruja Beauty Hub and Lounge</div>
+        <div class="brand-sub">
+          <span class="pill"><span class="dot"></span> Secure login • Sales & Expenses</span>
         </div>
       </div>
-    </div>
-  </div>
+
+      <form id="loginForm" class="form">
+        <label class="field">
+          <span>User Name (Email)</span>
+          <input id="email" type="email" autocomplete="username" placeholder="name@email.com" required />
+        </label>
+
+        <label class="field">
+          <span>Password</span>
+          <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
+        </label>
+
+        <button id="loginBtn" class="btn btn-primary btn-full" type="submit">
+          Login
+        </button>
+
+        <p id="msg" class="msg"></p>
+      </form>
+    </section>
+
+    <footer class="tiny-footer">
+      No39/A new rosita bazar kotagala • 051-224 4456 / 076-669 3456
+    </footer>
+  </main>
 
   <script type="module">
+    // Firebase (CDN)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
+    // ✅ YOUR CONFIG (kept exactly)
     const firebaseConfig = {
       apiKey: "AIzaSyB_pQt0C5X3R9tmVl8SRGT-DQ3eoNvdOEw",
       authDomain: "salonsales-32a19.firebaseapp.com",
@@ -47,25 +64,34 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "app.html";
-    });
+    const $ = (id) => document.getElementById(id);
+    const msg = $("msg");
+    const loginBtn = $("loginBtn");
 
-    const msg = document.getElementById("msg");
-    document.getElementById("loginBtn").onclick = async () => {
-      msg.className="msg";
-      msg.textContent="";
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+    // Keep user logged in
+    await setPersistence(auth, browserLocalPersistence);
 
-      try{
+    $("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.className = "msg";
+      msg.textContent = "";
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Logging in...";
+
+      try {
+        const email = $("email").value.trim();
+        const password = $("password").value;
         await signInWithEmailAndPassword(auth, email, password);
         window.location.href = "app.html";
-      }catch(e){
-        msg.className="msg msgErr";
-        msg.textContent = e.message;
+      } catch (err) {
+        msg.className = "msg msg-error";
+        msg.textContent = err?.message || "Login failed";
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
       }
-    };
+    });
   </script>
 </body>
 </html>
