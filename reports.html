@@ -3,120 +3,117 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Deruja Beauty Hub and Lounge - Reports</title>
-
-  <link rel="stylesheet" href="./styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <title>Deruja Beauty Hub and Lounge — Reports</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
+<body>
+  <div class="bg-orbs"></div>
 
-<body class="bg">
-  <div class="page">
-    <!-- Top Header -->
-    <header class="topbar">
-      <div class="brand">
-        <img class="brandLogo" src="./assets/logo.png" alt="Logo" />
-        <div class="brandText">
-          <div class="brandName">Deruja Beauty Hub and Lounge</div>
-          <div class="brandSub">Reports • Print ready</div>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <img src="assets/logo.png" alt="Logo" />
+      </div>
+      <div class="topbar-text">
+        <div class="topbar-title">Deruja Beauty Hub and Lounge</div>
+        <div class="topbar-sub">Reports • Print ready</div>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <a class="btn btn-soft" href="app.html">← <span class="hide-sm">Back</span></a>
+      <button id="printBtn" class="btn btn-primary" type="button">🖨 <span class="hide-sm">Print</span></button>
+      <button id="logoutBtn" class="btn btn-danger" type="button">⎋ <span class="hide-sm">Logout</span></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="grid-2 report-grid">
+      <div class="glass-card card">
+        <div class="card-head">
+          <h2>Report Selection</h2>
+          <p>Select date range or month then click Open</p>
+        </div>
+
+        <div class="form">
+          <div class="grid-2-sm">
+            <label class="field">
+              <span>Daily / Range (From)</span>
+              <input id="fromDate" type="date" />
+            </label>
+            <label class="field">
+              <span>Daily / Range (To)</span>
+              <input id="toDate" type="date" />
+            </label>
+          </div>
+
+          <div class="grid-2-sm">
+            <label class="field">
+              <span>Monthly report (month)</span>
+              <input id="monthPick" type="month" />
+            </label>
+            <label class="field">
+              <span>Monthly type</span>
+              <select id="monthType">
+                <option value="salary_workers">Salary (by workers)</option>
+                <option value="monthly_breakdown">Monthly payments breakdown</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="btn-grid">
+            <button id="openDaily" class="btn btn-primary" type="button">Open daily business</button>
+            <button id="openExpenses" class="btn btn-soft" type="button">Open expenses</button>
+            <button id="openMonthly" class="btn btn-primary" type="button">Open monthly must</button>
+            <button id="openFull" class="btn btn-primary" type="button">Open full summary report</button>
+            <button id="openFinance" class="btn btn-primary btn-wide" type="button">Open full financial report</button>
+          </div>
+
+          <p id="msg" class="msg"></p>
         </div>
       </div>
 
-      <div class="topActions">
-        <a class="btn btnGhost" href="./app.html">← Back</a>
-        <button id="btnPrint" class="btn btnPrimary">🖨 Print</button>
-        <button id="btnLogout" class="btn btnDanger">⎋ Logout</button>
-      </div>
-    </header>
-
-    <!-- Main Grid -->
-    <main class="grid2">
-      <!-- Left: selection -->
-      <section class="card">
-        <div class="cardTitle">Report Selection</div>
-        <div class="cardHint">Select date range or month then click Open</div>
-
-        <div class="formGrid2">
-          <div class="field">
-            <label>Daily / Range (From)</label>
-            <input id="fromDate" type="date" />
-          </div>
-          <div class="field">
-            <label>Daily / Range (To)</label>
-            <input id="toDate" type="date" />
-          </div>
-
-          <div class="field">
-            <label>Monthly report (month)</label>
-            <input id="monthPick" type="month" />
-          </div>
-
-          <div class="field">
-            <label>Monthly type</label>
-            <select id="monthlyType">
-              <option value="salary_workers">Salary (by workers)</option>
-              <option value="rent">Rent</option>
-              <option value="water">Water</option>
-              <option value="electric">Electric</option>
-              <option value="other">Other</option>
-              <option value="all">All monthly must (breakdown)</option>
-            </select>
-          </div>
+      <div class="glass-card card">
+        <div class="card-head">
+          <h2>Report Output</h2>
+          <p>Tip: Print button makes PDF / paper report</p>
         </div>
 
-        <!-- Buttons: nice spacing + responsive -->
-        <div class="btnGrid">
-          <button id="openDaily" class="btn btnPrimary">Open daily business</button>
-          <button id="openExpenses" class="btn btnGhost">Open expenses</button>
-          <button id="openMonthly" class="btn btnPrimary">Open monthly must</button>
-          <button id="openSummary" class="btn btnPrimary">Open full summary report</button>
-          <button id="openFinancial" class="btn btnPrimary btnWide">Open full financial report</button>
-        </div>
-
-        <div id="msg" class="msg"></div>
-      </section>
-
-      <!-- Right: output -->
-      <section class="card">
-        <div class="cardTitle">Report Output</div>
-        <div class="cardHint">Tip: Print button makes PDF / paper report</div>
-
-        <!-- PRINT HEADER (only shows in print) -->
-        <div class="printHeader" id="printHeader">
-          <div class="printHeaderInner">
-            <img class="printLogo" src="./assets/logo.png" alt="Logo" />
-            <div class="printMeta">
-              <div class="printName">Deruja Beauty Hub and Lounge</div>
-              <div class="printLine">No39/A new rosita bazar kotagala</div>
-              <div class="printLine">Mobile No: 051-224 4456 / 076-669 3456</div>
-              <div class="printLine" id="printRangeLine">Report</div>
-              <div class="printLine" id="printTimeLine"></div>
+        <!-- PRINT HEADER (shown only when printing OR when report rendered) -->
+        <div id="printHeader" class="print-header">
+          <div class="print-brand">
+            <img class="print-logo" src="assets/logo.png" alt="Logo" />
+            <div class="print-brand-text">
+              <div class="print-name">Deruja Beauty Hub and Lounge</div>
+              <div class="print-meta">
+                No39/A new rosita bazar kotagala<br />
+                Mobile No: 051-224 4456 / 076-669 3456
+              </div>
+              <div id="printMeta" class="print-small"></div>
             </div>
           </div>
-          <hr class="printHr">
+          <hr class="print-hr" />
         </div>
 
-        <div id="output" class="outputEmpty">
-          Select a report and click Open.
+        <div id="output" class="report-output">
+          <div class="empty-note">Select a report and click Open.</div>
         </div>
-      </section>
-    </main>
-  </div>
+      </div>
+    </section>
+  </main>
 
-  <!-- Firebase + App -->
+  <!-- Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
   <script type="module">
-    // Firebase (CDN modular)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import {
-      getFirestore, collection, query, where, orderBy, getDocs
+      getFirestore, collection, query, where, getDocs
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    // ✅ YOUR CONFIG (already correct)
+    // ✅ YOUR CONFIG (kept exactly)
     const firebaseConfig = {
       apiKey: "AIzaSyB_pQt0C5X3R9tmVl8SRGT-DQ3eoNvdOEw",
       authDomain: "salonsales-32a19.firebaseapp.com",
@@ -130,471 +127,624 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ---------- helpers ----------
-    const msg = document.getElementById("msg");
-    const output = document.getElementById("output");
-    const printRangeLine = document.getElementById("printRangeLine");
-    const printTimeLine = document.getElementById("printTimeLine");
+    // Collections (match app.html)
+    const COL_DAILY = "dailySales";
+    const COL_MONTHLY = "monthlyExpenses";
 
-    const money = (n) => new Intl.NumberFormat("en-LK", {
-      style: "currency",
-      currency: "LKR",
-      minimumFractionDigits: 2
-    }).format(Number(n || 0));
+    const $ = (id) => document.getElementById(id);
 
-    // ISO date -> 01-Jan-26
+    const msg = $("msg");
+    const output = $("output");
+    const printMeta = $("printMeta");
+    const printHeader = $("printHeader");
+
+    let chartLine = null;
+    let chartPie = null;
+
+    // LKR money formatter (with normal space)
+    const money = (n) => {
+      const v = Number(n || 0);
+      return new Intl.NumberFormat("en-LK", {
+        style: "currency",
+        currency: "LKR",
+        minimumFractionDigits: 2
+      }).format(v).replace(/\u00A0/g, " ");
+    };
+
+    // 01-Jan-26 format
     const fmtDate = (iso) => {
       if (!iso) return "";
       const d = new Date(iso + "T00:00:00");
       const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      const dd = String(d.getDate()).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2, "0");
       const mm = months[d.getMonth()];
       const yy = String(d.getFullYear()).slice(-2);
       return `${dd}-${mm}-${yy}`;
     };
 
-    const nowStamp = () => {
-      const d = new Date();
-      return d.toLocaleString("en-LK", { hour12: true });
+    const fmtMonth = (ym) => {
+      // ym = YYYY-MM
+      if (!ym) return "";
+      const [y,m] = ym.split("-").map(Number);
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return `${months[m-1]} ${y}`;
     };
 
-    const setMessage = (t, kind="") => {
-      msg.className = "msg " + (kind ? ("msg_" + kind) : "");
-      msg.textContent = t || "";
-    };
-
-    const setPrintMeta = (title, rangeText) => {
-      printRangeLine.textContent = rangeText ? `${title} • Range: ${rangeText}` : title;
-      printTimeLine.textContent = "Printed: " + nowStamp();
-    };
-
-    function getRange() {
-      const from = document.getElementById("fromDate").value;
-      const to = document.getElementById("toDate").value;
+    const getRange = () => {
+      const from = $("fromDate").value;
+      const to = $("toDate").value;
       if (!from || !to) return null;
       if (from > to) return null;
       return { from, to };
-    }
+    };
 
-    function monthKeyOf(inputMonth) {
-      // inputMonth = "2026-01"
-      return inputMonth || "";
-    }
-
-    function monthKeysBetween(from, to) {
+    const monthKeysBetween = (from, to) => {
       const out = [];
       const d1 = new Date(from + "T00:00:00");
       const d2 = new Date(to + "T00:00:00");
       const d = new Date(d1.getFullYear(), d1.getMonth(), 1);
       const end = new Date(d2.getFullYear(), d2.getMonth(), 1);
       while (d <= end) {
-        out.push(d.toISOString().slice(0,7)); // YYYY-MM
+        out.push(d.toISOString().slice(0, 7)); // YYYY-MM
         d.setMonth(d.getMonth() + 1);
       }
       return out;
-    }
-
-    // ---------- auth guard ----------
-    onAuthStateChanged(auth, (user) => {
-      if (!user) location.href = "./index.html";
-    });
-
-    document.getElementById("btnLogout").onclick = async () => {
-      await signOut(auth);
-      location.href = "./index.html";
     };
 
-    document.getElementById("btnPrint").onclick = () => window.print();
-
-    // ---------- Firestore collections (must match your app.html writes) ----------
-    // If your app uses different names, change ONLY these 2 lines to match:
-    const COL_DAILY = "dailySales";
-    const COL_MONTHLY = "monthlyExpenses";
-
-    // ---------- render helpers ----------
-    function cardBox(title, subtitle, innerHtml) {
-      return `
-        <div class="reportCard">
-          <div class="reportHead">
-            <div class="reportTitle">${title}</div>
-            ${subtitle ? `<div class="reportSub">${subtitle}</div>` : ``}
-          </div>
-          <div class="reportBody">${innerHtml}</div>
-        </div>
-      `;
-    }
-
-    function tableHtml(headers, rowsHtml) {
-      return `
-        <div class="tableWrap">
-          <table class="tbl">
-            <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
-            <tbody>${rowsHtml}</tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    // Charts (destroy old)
-    let chartLine = null;
-    let chartPie = null;
-
-    function ensureChartsDestroyed() {
+    const destroyCharts = () => {
       if (chartLine) { chartLine.destroy(); chartLine = null; }
       if (chartPie) { chartPie.destroy(); chartPie = null; }
-    }
+    };
 
-    // ---------- queries ----------
-    async function fetchDaily(from, to) {
+    const setPrintMeta = (title, rangeText) => {
+      const now = new Date();
+      const printed = now.toLocaleString();
+      printMeta.textContent = `${title} | ${rangeText} | Printed: ${printed}`;
+      // show header on screen when report exists
+      printHeader.style.display = "block";
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "index.html";
+    });
+
+    $("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+    $("printBtn").addEventListener("click", () => window.print());
+
+    // ---------------------------
+    // Firestore loaders
+    // ---------------------------
+    async function loadDailyDocs(from, to) {
+      // date string ISO, so string compare works
       const q = query(
         collection(db, COL_DAILY),
         where("date", ">=", from),
-        where("date", "<=", to),
-        orderBy("date", "asc")
+        where("date", "<=", to)
       );
       const snap = await getDocs(q);
       const rows = [];
-      snap.forEach(doc => rows.push({ id: doc.id, ...doc.data() }));
+      snap.forEach((doc) => rows.push({ id: doc.id, ...doc.data() }));
+      // sort by date
+      rows.sort((a,b) => (a.date || "").localeCompare(b.date || ""));
       return rows;
     }
 
-    async function fetchMonthlyForMonths(monthKeys) {
+    async function loadMonthlyDocsForMonths(monthKeys) {
       if (!monthKeys.length) return [];
-      // Firestore 'in' supports max 10, so chunk it
-      const chunks = [];
-      for (let i=0;i<monthKeys.length;i+=10) chunks.push(monthKeys.slice(i,i+10));
-
-      const out = [];
-      for (const ch of chunks) {
-        const q = query(
-          collection(db, COL_MONTHLY),
-          where("monthKey", "in", ch)
-        );
-        const snap = await getDocs(q);
-        snap.forEach(doc => out.push({ id: doc.id, ...doc.data() }));
-      }
-      return out;
-    }
-
-    async function fetchMonthlyOneMonth(monthKey) {
-      const q = query(collection(db, COL_MONTHLY), where("monthKey","==", monthKey));
+      // Firestore "in" max 30. Your month list is small normally.
+      const q = query(
+        collection(db, COL_MONTHLY),
+        where("monthKey", "in", monthKeys.slice(0, 30))
+      );
       const snap = await getDocs(q);
-      const out = [];
-      snap.forEach(doc => out.push({ id: doc.id, ...doc.data() }));
-      return out;
+      const rows = [];
+      snap.forEach((doc) => rows.push({ id: doc.id, ...doc.data() }));
+      return rows;
     }
 
-    // ---------- button: Daily Business ----------
-    document.getElementById("openDaily").onclick = async () => {
-      ensureChartsDestroyed();
-      setMessage("");
+    // ---------------------------
+    // REPORT 1: Daily Business
+    // ---------------------------
+    $("openDaily").onclick = async () => {
+      msg.className = "msg";
+      msg.textContent = "";
 
       const r = getRange();
-      if (!r) return setMessage("Select valid From and To dates.", "bad");
+      if (!r) {
+        msg.className = "msg msg-warn";
+        msg.textContent = "Select valid From and To dates.";
+        return;
+      }
 
-      setPrintMeta("Daily Business Report", `${fmtDate(r.from)} to ${fmtDate(r.to)}`);
+      destroyCharts();
 
-      const daily = await fetchDaily(r.from, r.to);
+      const daily = await loadDailyDocs(r.from, r.to);
+      const totalBusiness = daily.reduce((s,x) => s + Number(x.business || 0), 0);
+      const totalBank = daily.reduce((s,x) => s + Number(x.bankSaving || 0), 0);
 
-      let totalBusiness = 0;
-      let totalBank = 0;
+      setPrintMeta("Daily Business Report", `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`);
 
-      const rowsHtml = daily.map(x => {
-        const business = Number(x.business || 0);
-        const bank = Number(x.bankSaving || x.bank || 0);
-        totalBusiness += business;
-        totalBank += bank;
-        return `
-          <tr>
-            <td>${x.date || ""}</td>
-            <td class="tRight">${money(business)}</td>
-            <td class="tRight">${money(bank)}</td>
-          </tr>
-        `;
-      }).join("");
+      output.innerHTML = `
+        <div class="report-card">
+          <h3>Daily Business Report</h3>
+          <div class="muted">Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}</div>
 
-      const tbl = tableHtml(
-        ["Date", "Business", "Bank saving"],
-        rowsHtml || `<tr><td colspan="3" class="tCenter muted">No data in range</td></tr>`
-      );
-
-      const footer = `
-        <div class="totals">
-          <div><b>Total business:</b> ${money(totalBusiness)}</div>
-          <div><b>Total bank saving:</b> ${money(totalBank)}</div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th class="t-right">Business</th>
+                  <th class="t-right">Bank saving</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${daily.map(x => `
+                  <tr>
+                    <td>${x.date || ""}</td>
+                    <td class="t-right">${money(x.business)}</td>
+                    <td class="t-right">${money(x.bankSaving)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><b>Totals</b></td>
+                  <td class="t-right"><b>${money(totalBusiness)}</b></td>
+                  <td class="t-right"><b>${money(totalBank)}</b></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       `;
-
-      output.className = "";
-      output.innerHTML = cardBox(
-        "Daily Business Report",
-        `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`,
-        tbl + footer
-      );
     };
 
-    // ---------- button: Daily Expenses ----------
-    document.getElementById("openExpenses").onclick = async () => {
-      ensureChartsDestroyed();
-      setMessage("");
+    // ---------------------------
+    // REPORT 2: Daily Expenses
+    // ---------------------------
+    $("openExpenses").onclick = async () => {
+      msg.className = "msg";
+      msg.textContent = "";
 
       const r = getRange();
-      if (!r) return setMessage("Select valid From and To dates.", "bad");
+      if (!r) {
+        msg.className = "msg msg-warn";
+        msg.textContent = "Select valid From and To dates.";
+        return;
+      }
 
-      setPrintMeta("Total Expenses Report (Daily)", `${fmtDate(r.from)} to ${fmtDate(r.to)}`);
+      destroyCharts();
 
-      const daily = await fetchDaily(r.from, r.to);
+      const daily = await loadDailyDocs(r.from, r.to);
+      const totalExp = daily.reduce((s,x) => s + Number(x.sameDayExpenses || 0), 0);
 
-      let totalExp = 0;
+      setPrintMeta("Total Expenses Report (Daily)", `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`);
 
-      const rowsHtml = daily.map(x => {
-        const exp = Number(x.sameDayExpenses || x.expenses || x.exp || 0);
-        totalExp += exp;
-        return `
-          <tr>
-            <td>${x.date || ""}</td>
-            <td class="tRight">${money(exp)}</td>
-          </tr>
-        `;
-      }).join("");
+      output.innerHTML = `
+        <div class="report-card">
+          <h3>Total Expenses Report (Daily)</h3>
+          <div class="muted">Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}</div>
 
-      const tbl = tableHtml(
-        ["Date", "Same-day Expenses"],
-        rowsHtml || `<tr><td colspan="2" class="tCenter muted">No data in range</td></tr>`
-      );
-
-      const footer = `
-        <div class="totals">
-          <div><b>Total daily expenses:</b> ${money(totalExp)}</div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th class="t-right">Same-day Expenses</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${daily.map(x => `
+                  <tr>
+                    <td>${x.date || ""}</td>
+                    <td class="t-right">${money(x.sameDayExpenses)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><b>Total daily expenses</b></td>
+                  <td class="t-right"><b>${money(totalExp)}</b></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       `;
-
-      output.className = "";
-      output.innerHTML = cardBox(
-        "Total Expenses Report (Daily)",
-        `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`,
-        tbl + footer
-      );
     };
 
-    // ---------- button: Monthly Must ----------
-    document.getElementById("openMonthly").onclick = async () => {
-      ensureChartsDestroyed();
-      setMessage("");
+    // ---------------------------
+    // REPORT 3: Monthly Must
+    // ---------------------------
+    $("openMonthly").onclick = async () => {
+      msg.className = "msg";
+      msg.textContent = "";
 
-      const monthKey = monthKeyOf(document.getElementById("monthPick").value);
-      if (!monthKey) return setMessage("Select a month first.", "bad");
+      const ym = $("monthPick").value;
+      if (!ym) {
+        msg.className = "msg msg-warn";
+        msg.textContent = "Select a month.";
+        return;
+      }
 
-      const type = document.getElementById("monthlyType").value;
+      destroyCharts();
 
-      setPrintMeta("Monthly Must Report", `Month: ${monthKey}`);
+      const q = query(collection(db, COL_MONTHLY), where("monthKey", "==", ym));
+      const snap = await getDocs(q);
 
-      const rows = await fetchMonthlyOneMonth(monthKey);
+      const rows = [];
+      snap.forEach(doc => rows.push({ id: doc.id, ...doc.data() }));
 
-      const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
-      rows.forEach(r => {
-        const t = (r.type || "other").toLowerCase();
-        const amt = Number(r.amount || 0);
-        if (byType[t] === undefined) byType.other += amt;
-        else byType[t] += amt;
-      });
+      const type = $("monthType").value;
 
-      // Salary by workers
       if (type === "salary_workers") {
-        const map = {};
-        rows.filter(r => (r.type || "").toLowerCase() === "salary").forEach(r => {
-          const w = (r.workerName || "Unknown").trim();
-          map[w] = (map[w] || 0) + Number(r.amount || 0);
+        const byWorker = {};
+        rows.filter(x => x.type === "salary").forEach(x => {
+          const name = (x.workerName || "Unknown").trim() || "Unknown";
+          byWorker[name] = (byWorker[name] || 0) + Number(x.amount || 0);
         });
+        const items = Object.entries(byWorker).sort((a,b)=>b[1]-a[1]);
+        const total = items.reduce((s, [,v]) => s + v, 0);
 
-        const workers = Object.entries(map).sort((a,b)=>b[1]-a[1]);
-        const total = workers.reduce((s, [,v])=>s+v, 0);
+        setPrintMeta("Monthly Salary Report (By workers)", `Month: ${fmtMonth(ym)}`);
 
-        const rowsHtml = workers.map(([w,v])=>`
-          <tr>
-            <td>${w}</td>
-            <td class="tRight">${money(v)}</td>
-          </tr>
-        `).join("");
+        output.innerHTML = `
+          <div class="report-card">
+            <h3>Monthly Salary Report (By workers)</h3>
+            <div class="muted">Month: ${ym}</div>
 
-        const tbl = tableHtml(
-          ["Worker", "Total salary paid"],
-          rowsHtml || `<tr><td colspan="2" class="tCenter muted">No salary records for this month</td></tr>`
-        );
-
-        output.className = "";
-        output.innerHTML = cardBox(
-          "Monthly Salary Report (By workers)",
-          `Month: ${monthKey}`,
-          tbl + `<div class="totals"><div><b>Total salaries paid:</b> ${money(total)}</div></div>`
-        );
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>Worker</th>
+                    <th class="t-right">Total salary paid</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${items.map(([name, val]) => `
+                    <tr>
+                      <td>${name}</td>
+                      <td class="t-right">${money(val)}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td><b>Total salaries paid</b></td>
+                    <td class="t-right"><b>${money(total)}</b></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        `;
         return;
       }
 
-      // Single type totals
-      if (["rent","water","electric","other"].includes(type)) {
-        const total = byType[type] || 0;
-        output.className = "";
-        output.innerHTML = cardBox(
-          "Monthly Must Report",
-          `Month: ${monthKey} • Type: ${type}`,
-          `<div class="totals"><div><b>Total ${type}:</b> ${money(total)}</div></div>`
-        );
-        return;
-      }
+      // monthly_breakdown
+      const totals = { salary:0, rent:0, water:0, electric:0, other:0 };
+      rows.forEach(x => {
+        const t = x.type || "other";
+        if (totals[t] === undefined) totals.other += Number(x.amount || 0);
+        else totals[t] += Number(x.amount || 0);
+      });
+      const grand = Object.values(totals).reduce((s,v)=>s+v,0);
 
-      // All breakdown
-      const totalMonthly = Object.values(byType).reduce((a,b)=>a+b,0);
-      const rowsHtml = `
-        <tr><td>Salaries</td><td class="tRight">${money(byType.salary)}</td></tr>
-        <tr><td>Rent</td><td class="tRight">${money(byType.rent)}</td></tr>
-        <tr><td>Water</td><td class="tRight">${money(byType.water)}</td></tr>
-        <tr><td>Electric</td><td class="tRight">${money(byType.electric)}</td></tr>
-        <tr><td>Other</td><td class="tRight">${money(byType.other)}</td></tr>
+      setPrintMeta("Monthly Payments Breakdown", `Month: ${fmtMonth(ym)}`);
+
+      output.innerHTML = `
+        <div class="report-card">
+          <h3>Monthly Payments Breakdown</h3>
+          <div class="muted">Month: ${ym}</div>
+
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th class="t-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Salary</td><td class="t-right">${money(totals.salary)}</td></tr>
+                <tr><td>Rent</td><td class="t-right">${money(totals.rent)}</td></tr>
+                <tr><td>Water</td><td class="t-right">${money(totals.water)}</td></tr>
+                <tr><td>Electric</td><td class="t-right">${money(totals.electric)}</td></tr>
+                <tr><td>Other</td><td class="t-right">${money(totals.other)}</td></tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><b>Total monthly payments</b></td>
+                  <td class="t-right"><b>${money(grand)}</b></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
       `;
-      const tbl = tableHtml(["Type", "Total"], rowsHtml);
-
-      output.className = "";
-      output.innerHTML = cardBox(
-        "Monthly Must Breakdown",
-        `Month: ${monthKey}`,
-        tbl + `<div class="totals"><div><b>Total monthly must:</b> ${money(totalMonthly)}</div></div>`
-      );
     };
 
-    // ---------- button: Full Summary (your existing idea) ----------
-    document.getElementById("openSummary").onclick = async () => {
-      ensureChartsDestroyed();
-      setMessage("");
+    // ---------------------------
+    // REPORT 4: Full Summary (old style)
+    // ---------------------------
+    $("openFull").onclick = async () => {
+      msg.className = "msg";
+      msg.textContent = "";
 
       const r = getRange();
-      if (!r) return setMessage("Select valid From and To dates.", "bad");
+      if (!r) {
+        msg.className = "msg msg-warn";
+        msg.textContent = "Select valid From and To dates.";
+        return;
+      }
 
-      setPrintMeta("Full Summary Report", `${fmtDate(r.from)} to ${fmtDate(r.to)}`);
+      destroyCharts();
 
-      const daily = await fetchDaily(r.from, r.to);
+      const daily = await loadDailyDocs(r.from, r.to);
       const months = monthKeysBetween(r.from, r.to);
-      const monthly = await fetchMonthlyForMonths(months);
+      const monthly = await loadMonthlyDocsForMonths(months);
 
-      let totalSales = 0;
-      let totalDailyExp = 0;
-      let totalBank = 0;
-
-      daily.forEach(x => {
-        totalSales += Number(x.business || 0);
-        totalDailyExp += Number(x.sameDayExpenses || x.expenses || x.exp || 0);
-        totalBank += Number(x.bankSaving || x.bank || 0);
-      });
+      const totalSales = daily.reduce((s,x)=>s+Number(x.business||0),0);
+      const totalDailyExp = daily.reduce((s,x)=>s+Number(x.sameDayExpenses||0),0);
+      const totalBank = daily.reduce((s,x)=>s+Number(x.bankSaving||0),0);
 
       const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
-      monthly.forEach(r => {
-        const t = (r.type || "other").toLowerCase();
-        const amt = Number(r.amount || 0);
+      monthly.forEach(x => {
+        const t = x.type || "other";
+        const amt = Number(x.amount || 0);
         if (byType[t] === undefined) byType.other += amt;
         else byType[t] += amt;
       });
+      const totalMonthly = Object.values(byType).reduce((s,v)=>s+v,0);
 
-      const totalMonthlyMust = Object.values(byType).reduce((a,b)=>a+b,0);
-      const totalExpenses = totalDailyExp + totalMonthlyMust;
+      const totalExpenses = totalDailyExp + totalMonthly;
+      const netProfit = totalSales - totalExpenses;
 
-      const netProfit = totalSales - totalExpenses;               // profit (excluding bank saving)
-      const cashAfterBank = netProfit - totalBank;                // if bank saving moved out
-      const totalAssets = netProfit + totalBank;                  // profit + bank saving
+      setPrintMeta("Full Summary Report", `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`);
 
-      // KPI cards
-      const kpis = `
-        <div class="kpiGrid">
-          <div class="kpi"><div class="kpiLabel">Total Sales</div><div class="kpiValue">${money(totalSales)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Total Expenses</div><div class="kpiValue">${money(totalExpenses)}</div><div class="kpiSmall">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthlyMust)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Net Profit</div><div class="kpiValue">${money(netProfit)}</div><div class="kpiSmall">(Profit = Sales − Expenses)</div></div>
-          <div class="kpi"><div class="kpiLabel">Bank Saving (separate)</div><div class="kpiValue">${money(totalBank)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Available Cash (Profit − Bank)</div><div class="kpiValue">${money(cashAfterBank)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Total Assets (Profit + Bank)</div><div class="kpiValue">${money(totalAssets)}</div></div>
+      output.innerHTML = `
+        <div class="report-card">
+          <h3>Full Summary Report</h3>
+          <div class="muted">Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}</div>
+
+          <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-l">Total Sales</div><div class="kpi-v">${money(totalSales)}</div></div>
+            <div class="kpi"><div class="kpi-l">Total Expenses</div><div class="kpi-v">${money(totalExpenses)}</div><div class="kpi-s">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthly)}</div></div>
+            <div class="kpi"><div class="kpi-l">Net Profit</div><div class="kpi-v">${money(netProfit)}</div><div class="kpi-s">(Profit = Sales − Expenses)</div></div>
+            <div class="kpi"><div class="kpi-l">Bank Saving (separate)</div><div class="kpi-v">${money(totalBank)}</div><div class="kpi-s">Not included in profit</div></div>
+          </div>
+
+          <div class="split">
+            <div class="mini">
+              <h4>Monthly payments breakdown</h4>
+              <table class="tbl">
+                <tbody>
+                  <tr><td>Salary</td><td class="t-right">${money(byType.salary)}</td></tr>
+                  <tr><td>Rent</td><td class="t-right">${money(byType.rent)}</td></tr>
+                  <tr><td>Water</td><td class="t-right">${money(byType.water)}</td></tr>
+                  <tr><td>Electric</td><td class="t-right">${money(byType.electric)}</td></tr>
+                  <tr><td>Other</td><td class="t-right">${money(byType.other)}</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><td><b>Total monthly payments</b></td><td class="t-right"><b>${money(totalMonthly)}</b></td></tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="mini">
+              <h4>Quick insights</h4>
+              ${(() => {
+                const dailyRows = daily.map(d => ({
+                  date: d.date,
+                  sales: Number(d.business||0),
+                  exp: Number(d.sameDayExpenses||0),
+                  profit: Number(d.business||0) - Number(d.sameDayExpenses||0)
+                }));
+                if (!dailyRows.length) return `<div class="muted">No daily data in range.</div>`;
+                const best = [...dailyRows].sort((a,b)=>b.profit-a.profit)[0];
+                const worst = [...dailyRows].sort((a,b)=>a.profit-b.profit)[0];
+                const highExp = [...dailyRows].sort((a,b)=>b.exp-a.exp)[0];
+                return `
+                  <ul class="bullets">
+                    <li>✅ Best profit day: <b>${best.date}</b> (${money(best.profit)})</li>
+                    <li>⚠️ Lowest profit day: <b>${worst.date}</b> (${money(worst.profit)})</li>
+                    <li>💸 Highest daily expense: <b>${highExp.date}</b> (${money(highExp.exp)})</li>
+                  </ul>
+                `;
+              })()}
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    // ---------------------------
+    // REPORT 5: Full Financial Report (NEW)
+    // Includes: total expenses = daily + monthly (salary/rent/water/electric/other)
+    // Adds: current available balance
+    // Adds: tables + charts
+    // ---------------------------
+    $("openFinance").onclick = async () => {
+      msg.className = "msg";
+      msg.textContent = "";
+
+      const r = getRange();
+      if (!r) {
+        msg.className = "msg msg-warn";
+        msg.textContent = "Select valid From and To dates.";
+        return;
+      }
+
+      destroyCharts();
+
+      const daily = await loadDailyDocs(r.from, r.to);
+      const months = monthKeysBetween(r.from, r.to);
+      const monthly = await loadMonthlyDocsForMonths(months);
+
+      // Totals
+      const totalSales = daily.reduce((s,x)=>s+Number(x.business||0),0);
+      const totalDailyExp = daily.reduce((s,x)=>s+Number(x.sameDayExpenses||0),0);
+      const totalBank = daily.reduce((s,x)=>s+Number(x.bankSaving||0),0);
+
+      const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
+      monthly.forEach(x => {
+        const t = x.type || "other";
+        const amt = Number(x.amount || 0);
+        if (byType[t] === undefined) byType.other += amt;
+        else byType[t] += amt;
+      });
+      const totalMonthly = Object.values(byType).reduce((s,v)=>s+v,0);
+
+      // ✅ IMPORTANT: total expenses ALL = daily + monthly
+      const totalExpensesAll = totalDailyExp + totalMonthly;
+
+      const netProfit = totalSales - totalExpensesAll;
+
+      // "Current available balance"
+      // If you treat bank saving as separate cash moved to bank:
+      // Available Balance = Net Profit + Bank Saving
+      const currentBalance = netProfit + totalBank;
+
+      // Build daily series for chart
+      const dailyRows = daily.map(d => ({
+        date: d.date,
+        sales: Number(d.business||0),
+        exp: Number(d.sameDayExpenses||0),
+        profit: Number(d.business||0) - Number(d.sameDayExpenses||0)
+      }));
+
+      setPrintMeta("Full Financial Report", `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`);
+
+      output.innerHTML = `
+        <div class="report-card">
+          <h3>Full Financial Report</h3>
+          <div class="muted">Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}</div>
+
+          <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-l">Total Sales</div><div class="kpi-v">${money(totalSales)}</div></div>
+
+            <div class="kpi">
+              <div class="kpi-l">Total Expenses (ALL)</div>
+              <div class="kpi-v">${money(totalExpensesAll)}</div>
+              <div class="kpi-s">Daily: ${money(totalDailyExp)} • Monthly: ${money(totalMonthly)}</div>
+            </div>
+
+            <div class="kpi">
+              <div class="kpi-l">Net Profit</div>
+              <div class="kpi-v">${money(netProfit)}</div>
+              <div class="kpi-s">(Sales − Daily − Monthly)</div>
+            </div>
+
+            <div class="kpi">
+              <div class="kpi-l">Current available balance</div>
+              <div class="kpi-v">${money(currentBalance)}</div>
+              <div class="kpi-s">Net Profit + Bank Saving (${money(totalBank)})</div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h4>Daily Sales vs Daily Expenses</h4>
+            <canvas id="lineChart" height="120"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <h4>Expense breakdown (Monthly payments)</h4>
+            <canvas id="pieChart" height="120"></canvas>
+          </div>
+
+          <div class="split">
+            <div class="mini">
+              <h4>Daily summary table</h4>
+              <div class="table-wrap">
+                <table class="tbl">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th class="t-right">Sales</th>
+                      <th class="t-right">Daily expenses</th>
+                      <th class="t-right">Bank saving</th>
+                      <th class="t-right">Profit (day)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${dailyRows.map(x => `
+                      <tr>
+                        <td>${x.date}</td>
+                        <td class="t-right">${money(x.sales)}</td>
+                        <td class="t-right">${money(x.exp)}</td>
+                        <td class="t-right">${money(daily.find(d=>d.date===x.date)?.bankSaving || 0)}</td>
+                        <td class="t-right">${money(x.profit)}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mini">
+              <h4>Monthly payments breakdown (within range)</h4>
+              <div class="table-wrap">
+                <table class="tbl">
+                  <thead>
+                    <tr><th>Type</th><th class="t-right">Total</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Salary</td><td class="t-right">${money(byType.salary)}</td></tr>
+                    <tr><td>Rent</td><td class="t-right">${money(byType.rent)}</td></tr>
+                    <tr><td>Water</td><td class="t-right">${money(byType.water)}</td></tr>
+                    <tr><td>Electric</td><td class="t-right">${money(byType.electric)}</td></tr>
+                    <tr><td>Other</td><td class="t-right">${money(byType.other)}</td></tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td><b>Total monthly payments</b></td>
+                      <td class="t-right"><b>${money(totalMonthly)}</b></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div class="note-box">
+                ✅ Total Expenses (ALL) = Daily expenses (${money(totalDailyExp)}) + Monthly payments (${money(totalMonthly)}) = <b>${money(totalExpensesAll)}</b>
+              </div>
+            </div>
+          </div>
         </div>
       `;
 
-      // Charts data
-      const labels = daily.map(x => x.date);
-      const salesSeries = daily.map(x => Number(x.business || 0));
-      const expSeries = daily.map(x => Number(x.sameDayExpenses || x.expenses || x.exp || 0));
+      // Build charts
+      const labels = dailyRows.map(x => x.date);
+      const sales = dailyRows.map(x => x.sales);
+      const exps = dailyRows.map(x => x.exp);
 
-      const charts = `
-        <div class="chartCard">
-          <div class="chartTitle">Daily Sales vs Daily Expenses</div>
-          <canvas id="chartLine" height="120"></canvas>
-        </div>
-
-        <div class="chartCard">
-          <div class="chartTitle">Expense Breakdown (Monthly must)</div>
-          <canvas id="chartPie" height="140"></canvas>
-        </div>
-      `;
-
-      // Tables (more info)
-      const dailyRows = daily.map(x => {
-        const s = Number(x.business || 0);
-        const e = Number(x.sameDayExpenses || x.expenses || x.exp || 0);
-        const b = Number(x.bankSaving || x.bank || 0);
-        const p = s - e; // daily profit excluding monthly must
-        return `<tr>
-          <td>${x.date || ""}</td>
-          <td class="tRight">${money(s)}</td>
-          <td class="tRight">${money(e)}</td>
-          <td class="tRight">${money(b)}</td>
-          <td class="tRight">${money(p)}</td>
-        </tr>`;
-      }).join("");
-
-      const dailyTbl = tableHtml(
-        ["Date","Sales","Daily expenses","Bank saving","Profit (day)"],
-        dailyRows || `<tr><td colspan="5" class="tCenter muted">No daily rows</td></tr>`
-      );
-
-      const monthlyTbl = tableHtml(
-        ["Type","Total"],
-        `
-          <tr><td>Salary</td><td class="tRight">${money(byType.salary)}</td></tr>
-          <tr><td>Rent</td><td class="tRight">${money(byType.rent)}</td></tr>
-          <tr><td>Water</td><td class="tRight">${money(byType.water)}</td></tr>
-          <tr><td>Electric</td><td class="tRight">${money(byType.electric)}</td></tr>
-          <tr><td>Other</td><td class="tRight">${money(byType.other)}</td></tr>
-        `
-      );
-
-      output.className = "";
-      output.innerHTML = cardBox(
-        "Full Summary Report",
-        `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`,
-        kpis +
-        charts +
-        `<div class="reportSectionTitle">Daily Summary Table</div>${dailyTbl}` +
-        `<div class="reportSectionTitle">Monthly Must Breakdown (within range)</div>${monthlyTbl}`
-      );
-
-      // Draw charts
-      const ctxLine = document.getElementById("chartLine");
-      const ctxPie = document.getElementById("chartPie");
-
-      chartLine = new Chart(ctxLine, {
+      const lineCtx = document.getElementById("lineChart");
+      chartLine = new Chart(lineCtx, {
         type: "line",
         data: {
           labels,
           datasets: [
-            { label: "Sales", data: salesSeries, tension: 0.3 },
-            { label: "Daily Expenses", data: expSeries, tension: 0.3 }
+            { label: "Sales", data: sales, tension: 0.25 },
+            { label: "Daily Expenses", data: exps, tension: 0.25 }
           ]
         },
         options: {
           responsive: true,
-          plugins: { legend: { labels: { color: "#fff" } } },
+          plugins: { legend: { labels: { color: "#e9e3ff" } } },
           scales: {
-            x: { ticks: { color: "rgba(255,255,255,.8)" }, grid: { color: "rgba(255,255,255,.08)" } },
-            y: { ticks: { color: "rgba(255,255,255,.8)" }, grid: { color: "rgba(255,255,255,.08)" } }
+            x: { ticks: { color: "#cfc6ff" }, grid: { color: "rgba(255,255,255,0.08)" } },
+            y: { ticks: { color: "#cfc6ff" }, grid: { color: "rgba(255,255,255,0.08)" } }
           }
         }
       });
 
-      chartPie = new Chart(ctxPie, {
+      const pieCtx = document.getElementById("pieChart");
+      chartPie = new Chart(pieCtx, {
         type: "doughnut",
         data: {
           labels: ["Salary","Rent","Water","Electric","Other"],
@@ -604,169 +754,7 @@
         },
         options: {
           responsive: true,
-          plugins: { legend: { labels: { color: "#fff" } } }
-        }
-      });
-    };
-
-    // ---------- NEW button: Full Financial Report (ALL IN ONE + more detail) ----------
-    document.getElementById("openFinancial").onclick = async () => {
-      ensureChartsDestroyed();
-      setMessage("");
-
-      const r = getRange();
-      if (!r) return setMessage("Select valid From and To dates.", "bad");
-
-      setPrintMeta("Full Financial Report", `${fmtDate(r.from)} to ${fmtDate(r.to)}`);
-
-      const daily = await fetchDaily(r.from, r.to);
-      const months = monthKeysBetween(r.from, r.to);
-      const monthly = await fetchMonthlyForMonths(months);
-
-      // totals
-      let totalSales = 0, totalDailyExp = 0, totalBank = 0;
-      daily.forEach(x => {
-        totalSales += Number(x.business || 0);
-        totalDailyExp += Number(x.sameDayExpenses || x.expenses || x.exp || 0);
-        totalBank += Number(x.bankSaving || x.bank || 0);
-      });
-
-      const byType = { salary:0, rent:0, water:0, electric:0, other:0 };
-      monthly.forEach(x => {
-        const t = (x.type || "other").toLowerCase();
-        const amt = Number(x.amount || 0);
-        if (byType[t] === undefined) byType.other += amt;
-        else byType[t] += amt;
-      });
-
-      const totalMonthlyMust = Object.values(byType).reduce((a,b)=>a+b,0);
-      const totalExpenses = totalDailyExp + totalMonthlyMust;
-
-      const netProfit = totalSales - totalExpenses;      // excludes bank
-      const availableCash = netProfit - totalBank;       // after bank saving moved out
-      const totalAssets = netProfit + totalBank;         // profit + bank saving
-
-      // Worker salary aggregation (across range months)
-      const salaryMap = {};
-      monthly.filter(x => (x.type || "").toLowerCase() === "salary").forEach(x => {
-        const w = (x.workerName || "Unknown").trim();
-        salaryMap[w] = (salaryMap[w] || 0) + Number(x.amount || 0);
-      });
-      const salaryRows = Object.entries(salaryMap).sort((a,b)=>b[1]-a[1]);
-
-      // KPI section
-      const kpis = `
-        <div class="kpiGrid">
-          <div class="kpi"><div class="kpiLabel">Total Sales</div><div class="kpiValue">${money(totalSales)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Total Daily Expenses</div><div class="kpiValue">${money(totalDailyExp)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Total Monthly Must</div><div class="kpiValue">${money(totalMonthlyMust)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Total Expenses (All)</div><div class="kpiValue">${money(totalExpenses)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Net Profit (Sales − Expenses)</div><div class="kpiValue">${money(netProfit)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Bank Saving (separate)</div><div class="kpiValue">${money(totalBank)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Available Cash (Profit − Bank)</div><div class="kpiValue">${money(availableCash)}</div></div>
-          <div class="kpi"><div class="kpiLabel">Total Assets (Profit + Bank)</div><div class="kpiValue">${money(totalAssets)}</div></div>
-        </div>
-      `;
-
-      // Daily table (detailed)
-      const dailyRows = daily.map(x => {
-        const s = Number(x.business || 0);
-        const e = Number(x.sameDayExpenses || x.expenses || x.exp || 0);
-        const b = Number(x.bankSaving || x.bank || 0);
-        const p = s - e;
-        return `<tr>
-          <td>${x.date || ""}</td>
-          <td class="tRight">${money(s)}</td>
-          <td class="tRight">${money(e)}</td>
-          <td class="tRight">${money(b)}</td>
-          <td class="tRight">${money(p)}</td>
-        </tr>`;
-      }).join("");
-
-      const dailyTbl = tableHtml(
-        ["Date","Sales","Daily expenses","Bank saving","Profit (day)"],
-        dailyRows || `<tr><td colspan="5" class="tCenter muted">No daily rows</td></tr>`
-      );
-
-      // Monthly breakdown table
-      const monthlyBreakTbl = tableHtml(
-        ["Type","Total"],
-        `
-          <tr><td>Salary</td><td class="tRight">${money(byType.salary)}</td></tr>
-          <tr><td>Rent</td><td class="tRight">${money(byType.rent)}</td></tr>
-          <tr><td>Water</td><td class="tRight">${money(byType.water)}</td></tr>
-          <tr><td>Electric</td><td class="tRight">${money(byType.electric)}</td></tr>
-          <tr><td>Other</td><td class="tRight">${money(byType.other)}</td></tr>
-        `
-      );
-
-      // Salary by workers table
-      const salaryTbl = tableHtml(
-        ["Worker","Total salary paid"],
-        salaryRows.map(([w,v]) => `<tr><td>${w}</td><td class="tRight">${money(v)}</td></tr>`).join("")
-        || `<tr><td colspan="2" class="tCenter muted">No salary data in range</td></tr>`
-      );
-
-      // Charts
-      const labels = daily.map(x => x.date);
-      const salesSeries = daily.map(x => Number(x.business || 0));
-      const expSeries = daily.map(x => Number(x.sameDayExpenses || x.expenses || x.exp || 0));
-
-      const charts = `
-        <div class="chartCard">
-          <div class="chartTitle">Daily Sales vs Daily Expenses</div>
-          <canvas id="finLine" height="120"></canvas>
-        </div>
-        <div class="chartCard">
-          <div class="chartTitle">All Expenses Breakdown</div>
-          <canvas id="finPie" height="140"></canvas>
-        </div>
-      `;
-
-      output.className = "";
-      output.innerHTML = cardBox(
-        "Full Financial Report",
-        `Range: ${fmtDate(r.from)} to ${fmtDate(r.to)}`,
-        kpis +
-        charts +
-        `<div class="reportSectionTitle">Daily Table (Sales • Expenses • Bank • Profit)</div>${dailyTbl}` +
-        `<div class="reportSectionTitle">Monthly Must Breakdown (Salary/Rent/Water/Electric/Other)</div>${monthlyBreakTbl}` +
-        `<div class="reportSectionTitle">Salary by Workers (within range)</div>${salaryTbl}`
-      );
-
-      const ctxLine = document.getElementById("finLine");
-      const ctxPie = document.getElementById("finPie");
-
-      chartLine = new Chart(ctxLine, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [
-            { label: "Sales", data: salesSeries, tension: 0.3 },
-            { label: "Daily Expenses", data: expSeries, tension: 0.3 }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: "#fff" } } },
-          scales: {
-            x: { ticks: { color: "rgba(255,255,255,.8)" }, grid: { color: "rgba(255,255,255,.08)" } },
-            y: { ticks: { color: "rgba(255,255,255,.8)" }, grid: { color: "rgba(255,255,255,.08)" } }
-          }
-        }
-      });
-
-      chartPie = new Chart(ctxPie, {
-        type: "doughnut",
-        data: {
-          labels: ["Daily Expenses","Salary","Rent","Water","Electric","Other"],
-          datasets: [{
-            data: [totalDailyExp, byType.salary, byType.rent, byType.water, byType.electric, byType.other]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: "#fff" } } }
+          plugins: { legend: { labels: { color: "#e9e3ff" } } }
         }
       });
     };
