@@ -444,3 +444,8 @@ input:focus, select:focus, textarea:focus{
   .tbl tfoot td{ border-top: 1px solid #bbb !important; }
   canvas{ max-width: 100% !important; }
 }
+/* --- SAFETY RESET: stop any accidental big logo / watermark --- */
+body::before, body::after { content: none !important; }
+.bg-orbs { background-image: none !important; } /* if old code exists */
+.hero-logo, .watermark, .big-logo { display: none !important; }
+img { max-width: 100%; height: auto; }
